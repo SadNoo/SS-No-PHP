@@ -33,7 +33,7 @@ jobs:
       - name: 依赖完整性
         run: go mod verify
       - name: 格式与静态检查
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
       - name: 订阅中心脚本测试
