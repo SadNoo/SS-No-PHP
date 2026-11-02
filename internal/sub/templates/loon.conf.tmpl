@@ -1,0 +1,28 @@
+# niuniupanel: Loon 3.2.3+; use a version supporting your selected node protocols.
+# This profile contains private node credentials. Do not share it.
+[General]
+ip-mode = v4-only
+ipv6-vif = off
+allow-wifi-access = false
+skip-proxy = {{join .Bypass ", "}}, {{join .LocalNames ", "}}
+bypass-tun = {{join .Bypass ", "}}
+# Only one fixed encrypted resolver; no system DNS or proxy bootstrap dependency.
+dns-server = 223.5.5.5
+doh-server = https://dns.alidns.com/dns-query
+real-ip = {{join .LocalNames ", "}}
+internet-test-url = http://www.apple.com/library/test/success.html
+proxy-test-url = http://cp.cloudflare.com/generate_204
+test-timeout = 5
+
+{{template "client-proxies" .}}
+{{template "client-groups" .}}
+[Rule]
+{{template "client-local-rules" .}}{{template "client-domain-rules" .}}
+# Loon 3.0.3+ checks domain rules (including subscriptions) before IP fallbacks.
+GEOIP,CN,🍂 Domestic,no-resolve
+FINAL,☁️ Others
+
+[Remote Rule]
+{{range .RuleSets}}{{.URL}}, policy={{.Policy}}, tag={{.Name}}, enabled=true
+{{end}}
+{{template "client-hosts" .}}

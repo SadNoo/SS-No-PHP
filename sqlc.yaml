@@ -1,0 +1,20 @@
+version: "2"
+sql:
+  - engine: mysql
+    schema: db/migrations
+    queries: db/queries
+    gen:
+      go:
+        package: store
+        out: internal/store
+        emit_interface: true
+        emit_exact_table_names: false
+        emit_empty_slices: true
+        emit_result_struct_pointers: false
+        emit_params_struct_pointers: false
+        overrides:
+          - db_type: "decimal"
+            go_type: "github.com/SadNoo/SS-No-PHP/internal/dec.D"
+          - db_type: "decimal"
+            nullable: true
+            go_type: "github.com/SadNoo/SS-No-PHP/internal/dec.NullD"

@@ -1,0 +1,19 @@
+# 构建上下文只放行编译需要的源码（白名单）。deploy/prod 下的 .env、.env.panel、certs/、config/、data/、backups/
+# 等部署文件与秘密一律不进入构建，以后新增的部署文件也默认排除。检查：deploy/check-build-context.sh（CI 会运行）。
+*
+!go.mod
+!go.sum
+!cmd
+!db
+!internal
+!web
+
+# 放行目录中也不应出现的文件
+**/.env*
+**/*.key
+**/*.pem
+**/*.crt
+**/*.sql.gz
+**/*.log
+**/node_modules
+web/tests

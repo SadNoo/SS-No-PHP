@@ -1,0 +1,146 @@
+{{define "page"}}{{template "partials/user/main" $}}
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">捐赠公示</h1>
+        </div>
+    </div>
+    <div class="container">
+        <section class="content-inner margin-top-no">
+            <div class="row">
+
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <p>感谢各位捐赠来支撑服务器的日常支出！您可以在<a href="/user/code">充值界面</a>进行充值，这样就等同于捐赠了。</p>
+                                {{if truthy $.User.IsAdmin}}
+                                    <p>总收入：{{$.Data.total_in}} 元</p>
+                                {{end}}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-inner">
+                                    <p class="card-heading">匿名捐赠</p>
+                                    <p>当前设置：<code data-default="hide">{{if truthy (peq $.User.IsHide 1)}} 匿名 {{else}} 不匿名 {{end}}</code>
+                                    </p>
+                                    <div class="form-group form-group-label control-highlight-custom dropdown">
+                                        <label class="floating-label" for="hide">匿名设置</label>
+                                        <button id="hide" class="form-control maxwidth-edit" data-toggle="dropdown"
+                                                value="{{$.User.IsHide}}"></button>
+                                        <ul class="dropdown-menu" aria-labelledby="hide">
+                                            <li><a href="#" class="dropdown-option" data-prevent val="1"
+                                                   data="hide">匿名</a></li>
+                                            <li><a href="#" class="dropdown-option" data-prevent val="0"
+                                                   data="hide">不匿名</a></li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                                <div class="card-action">
+                                    <div class="card-action-btn pull-left">
+                                        <button class="btn btn-flat waves-attach" id="hide-update"><span class="icon">check</span>&nbsp;提交
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+
+                                <div class="card-table">
+                                    <div class="table-responsive table-user">
+                                        {{$.Data.codes.Render}}
+                                        <table class="table table-hover">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>用户名</th>
+                                                <th>类型</th>
+                                                <th>操作</th>
+                                                <th>备注</th>
+                                                <th>时间</th>
+
+                                            </tr>
+                                            {{range $code := $.Data.codes.Items}}
+                                                <tr>
+                                                    <td>#{{$code.ID}}</td>
+                                                    {{if truthy (and (truthy (pne $code.User nil)) (truthy (peq $code.User.IsHide 0)))}}
+                                                        <td>{{$code.User.UserName}}</td>
+                                                    {{else}}
+                                                        <td>用户匿名或已注销</td>
+                                                    {{end}}
+                                                    {{if truthy (peq $code.Type (neg 1))}}
+                                                        <td>充值捐赠</td>
+                                                    {{end}}
+                                                    {{if truthy (peq $code.Type (neg 2))}}
+                                                        <td>财务支出</td>
+                                                    {{end}}
+                                                    {{if truthy (peq $code.Type (neg 1))}}
+                                                        <td>捐赠 {{$code.Number}} 元</td>
+                                                    {{end}}
+                                                    {{if truthy (peq $code.Type (neg 2))}}
+                                                        <td>支出 {{$code.Number}} 元</td>
+                                                    {{end}}
+                                                    <td>{{$code.Code}}</td>
+                                                    <td>{{$code.Usedatetime}}</td>
+                                                </tr>
+                                            {{end}}
+                                        </table>
+                                        {{$.Data.codes.Render}}
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{template "partials/dialog" $}}
+            </div>
+        </section>
+    </div>
+</main>
+
+
+{{template "partials/user/footer" $}}
+
+<script nonce="{{$.Nonce}}">
+    $(document).ready(function () {
+        $("#hide-update").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "hide",
+                dataType: "json",
+                data: {
+                    hide: $$getValue('hide')
+                },
+                success: (data) => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = data.msg;
+                },
+                error: (jqXHR) => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `${
+                            data.msg
+                            } 出现了一些错误`;
+                }
+            })
+        })
+    })
+</script>{{end}}

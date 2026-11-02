@@ -1,0 +1,246 @@
+# niuniupanel 配置示例。复制为 config.toml 后修改。
+# 所有配置项都可以用环境变量覆盖：NIUNIU_<段名>_<键名>（全部大写，子段用 _ 连接），例如
+#   NIUNIU_APP_KEY、NIUNIU_DATABASE_PASSWORD、NIUNIU_SECURITY_MU_KEY、NIUNIU_RADIUS_DB_PASSWORD
+# 密码、密钥类配置建议用环境变量提供，不要写在配置文件里。
+# 配置文件中出现无法识别的键时程序拒绝启动，避免拼写错误被忽略。
+
+[app]
+name = "SS-No-PHP"                 # 站点名称（页面标题、页脚、邮件）
+base_url = "https://panel.example.com"  # 站点地址，不带结尾斜杠
+sub_url = ""                        # 订阅地址，留空则为 base_url + "/link/"
+# 备用订阅地址：用户中心订阅区出现「订阅线路」下拉框，可在主线路与这些地址之间切换。
+# 格式同 sub_url（以 /link/ 结尾），域名需指向本面板（Docker 部署要加入 install.sh 的 --domains）。
+# 例如 ["https://sub2.example.com/link/", "https://sub3.example.net/link/"]；环境变量用逗号分隔。
+sub_url_backup = []
+# 订阅完整配置中强制走「🍃 Proxy」的域名后缀（例如站点自己的域名，避免被 Apple / 国内规则分走），排在其他分流规则之前。
+# 写 [] 则不输出这条规则；环境变量 NIUNIU_APP_SUB_PROXY_DOMAINS 用逗号分隔。
+sub_proxy_domains = []
+key = ""                            # 必填：至少 16 位随机字符串（建议用环境变量 NIUNIU_APP_KEY）
+debug = false
+time_zone = "Asia/Shanghai"         # 业务时区，对应旧版 timeZone = PRC
+
+[http]
+listen = "127.0.0.1:8080"
+trusted_proxies = ["127.0.0.1/32", "::1/128"]  # 只采信这些反向代理传来的 X-Forwarded-For
+read_timeout = "15s"
+write_timeout = "60s"
+idle_timeout = "120s"
+
+[database]
+host = "127.0.0.1"
+port = 3306
+name = "niuniupanel"
+user = "panel"
+password = ""                       # 建议用环境变量 NIUNIU_DATABASE_PASSWORD
+tls_mode = "verify"                 # verify：强制 TLS 并校验证书；disabled：仅限本机连接
+tls_ca = ""                         # CA 证书路径，留空使用系统 CA
+tls_server_name = ""                # 证书主机名，留空使用 host
+tls_client_cert = ""                # 可选：客户端证书（数据库要求双向 TLS 时）
+tls_client_key = ""                 # 可选：客户端私钥
+max_open_conns = 20
+max_idle_conns = 5
+conn_max_lifetime = "30m"
+connect_timeout = "10s"
+
+[log]
+level = "info"                      # debug / info / warn / error
+format = "text"                     # text / json
+
+[migrate]
+auto_up = true                      # 启动时自动执行表结构变更
+backup_command = ""                 # 执行变更前运行的备份命令，例如 mysqldump ... > /backup/xxx.sql
+
+[security]
+legacy_pwd_method = "md5"           # 旧系统 pwdMethod，仅用于校验旧密码
+legacy_salt = ""                    # 旧系统 salt（建议用环境变量 NIUNIU_SECURITY_LEGACY_SALT）
+mu_key = ""                         # 节点后端通信密钥（旧 muKey）
+mu_key_list = []                    # 其他可用的节点密钥（旧 muKeyList）
+session_lifetime = "168h"           # 勾选“记住我”时的登录有效期（旧 rememberMeDuration = 7 天）
+session_idle_timeout = "24h"
+cookie_secure = true                # 正式环境必须为 true（全站 HTTPS）
+node_ip_grace = "10m"               # 动态 IP（DDNS）节点换 IP 后、DNS 更新前的宽限时间，"0s" 不宽限（见 docs/node-api.md）
+
+# ======================================================================
+# 业务设置（对应原版 config/.config.php）。键名沿用原版并改为小写下划线，注释中标出原版键名。
+# 未写出的配置项使用程序内置的默认值（即下面写出的值）。
+# ======================================================================
+
+[register]
+mode = "open"                       # register_mode：close 关闭 / open 开放 / invite 仅限邀请
+default_traffic = 1.0               # defaultTraffic：注册赠送流量（GB）
+user_expire_in_default = 36500      # 帐号有效期（天），默认 100 年；帐号到期会被删除
+user_class_default = 0              # 注册时的用户等级
+user_class_expire_default = 24      # 等级有效期（小时）
+user_conn = 5                       # 新注册用户的同时在线 IP 数，0 不限；只影响新注册用户，购买套餐不会修改
+user_speedlimit = 0.0               # 限速（Mbps），0 不限
+reg_auto_reset_day = 0              # 每月自动重置流量的日期，0 不重置
+reg_auto_reset_bandwidth = 0.0      # 自动重置为的流量（GB）
+random_group = "0"                  # ramdom_group：注册时随机分配的节点分组，逗号分隔
+reg_method = "rc4-md5"              # 注册时的加密方式
+reg_protocol = "origin"
+reg_protocol_param = ""
+reg_obfs = "plain"
+reg_obfs_param = ""
+# 新注册用户禁止访问的 IP（逗号分隔）：回环、本网、内网、运营商级 NAT、链路本地与云元数据（169.254.169.254）、IPv6 ULA 与链路本地
+reg_forbidden_ip = "127.0.0.0/8,0.0.0.0/8,10.0.0.0/8,100.64.0.0/10,169.254.0.0/16,172.16.0.0/12,192.168.0.0/16,::1/128,fc00::/7,fe80::/10"
+reg_forbidden_port = ""             # 禁止访问的端口，逗号分隔
+min_port = 10000                    # 用户端口范围
+max_port = 65535
+mu_suffix = "microsoft.com"         # 单端口多用户混淆参数后缀
+mu_regex = "%5m%id.%suffix"         # 单端口多用户混淆参数格式
+invite_num = 10                     # inviteNum：注册后可邀请的人数
+invite_get_money = 0.0              # 通过邀请注册获得的余额（元）
+invite_price = -1.0                 # 购买邀请次数的单价（元），小于 0 不开放
+custom_invite_price = -1.0          # 定制邀请链接的价格（元），小于 0 不开放
+enable_email_verify = false         # 注册时验证邮箱
+email_verify_ttl = 3600             # 邮箱验证码有效期（秒）
+email_verify_iplimit = 10           # 有效期内同一 IP 最多请求验证码的次数
+
+[users]
+checkin_min = 1.0                   # checkinMin：签到最少获得的流量（MB）
+checkin_max = 50.0                  # checkinMax：签到最多获得的流量（MB）
+auto_clean_uncheck_days = -1        # 清理连续多少天未签到的用户，-1 不清理
+auto_clean_unused_days = -1         # 清理连续多少天未使用的用户，-1 不清理
+auto_clean_min_money = 1.0          # 余额低于此值（元）的用户才会被清理
+code_payback = 0.0                  # 被邀请人充值时邀请人获得的返利（百分比），0 为不返利、不写返利记录
+invite_gift = 0.0                   # 邀请人获得的流量奖励（GB）
+enable_bought_reset = true          # 购买套餐时重置流量
+enable_bought_extend = true         # 购买同等级套餐时叠加时长
+# 自动续费（默认关闭）。关闭时购买不提供“到期时自动续费”、不记录续费时间，定时任务也不续费扣款（含导入的旧订单）。
+# 开启后每个帐号只有最新购买的套餐会自动续费：购买新套餐时自动关闭其他套餐的自动续费。
+enable_auto_renew = false
+port_price = -1.0                   # 随机更换端口的价格（元），小于 0 不开放
+port_price_specify = -1.0           # 指定端口的价格（元），小于 0 不开放
+class_expire_reset_traffic = 0.0    # 等级到期时把流量重置为（GB），小于 0 不重置
+account_expire_delete_days = -1     # 帐号过期多少天后删除，-1 不删除
+enable_kill = true                  # 允许用户自行删除帐号
+notify_limit_mode = "false"         # 流量不足提醒：false 关闭 / per 按剩余百分比 / mb 按剩余流量
+notify_limit_value = 20.0           # 提醒阈值（百分比或 MB）
+merge_sub = false                   # mergeSub：SS 与 SSR 订阅合并
+
+[mail]
+driver = "none"                     # mailDriver：none / smtp / mailgun / sendgrid
+send_page_limit = 50                # 群发邮件时每批的数量
+smtp_host = ""
+smtp_port = 465
+smtp_ssl = true                     # true：SMTPS（通常 465）；false：STARTTLS（通常 587）
+smtp_username = ""
+smtp_password = ""                  # 原版键名 smtp_passsword；建议用环境变量 NIUNIU_MAIL_SMTP_PASSWORD
+smtp_name = ""                      # 发件人名称
+smtp_sender = ""                    # 发件人地址
+mailgun_key = ""
+mailgun_domain = ""
+mailgun_sender = ""
+sendgrid_key = ""
+sendgrid_sender = ""
+
+[captcha]
+provider = "recaptcha"              # captcha_provider：recaptcha / geetest
+recaptcha_sitekey = ""
+recaptcha_secret = ""
+geetest_id = ""
+geetest_key = ""
+enable_reg_captcha = false
+enable_login_captcha = false
+enable_checkin_captcha = false
+
+[telegram]
+enable = false                      # enable_telegram：机器人、群通知、Telegram 登录
+token = ""                          # telegram_token：机器人令牌（建议用环境变量 NIUNIU_TELEGRAM_TOKEN）
+chat_id = 0                         # telegram_chatid：通知群组 ID（在群里发送 /ping 获取）
+bot = "_bot"                        # telegram_bot：机器人用户名，不带 @
+group_quiet = false                 # 群组中不回复命令
+request_token = ""                  # webhook 令牌：必填的随机字符串（字母、数字、_ 或 -），设置后执行 panel xcat setTelegram
+enable_welcome_message = true       # 新成员入群时发送欢迎消息
+finance_public = false              # 财务报表同时发到群组
+
+[contact]
+enable_ticket = true                # 已停用：用户端不支持发起工单（保留以兼容旧配置）
+mail_ticket = true                  # 已停用（同上）
+enable_admin_contact = false        # 同时在用户中心首页显示管理员联系方式
+# 「联系我们」页面显示的联系方式，每项一行文字，例如 "邮箱：admin@example.com"、"Telegram：@example"
+admin_contact1 = ""
+admin_contact2 = ""
+admin_contact3 = ""
+enable_mylivechat = false           # MyLiveChat 在线客服
+mylivechat_id = "null"
+use_scftqq = false                  # 使用 Server 酱推送节点掉线等通知
+scftqq_sckey = ""
+enable_discord = false              # 在资料页显示 Discord 绑定（原版 Discord 机器人未移植）
+
+# 用户中心首页「群组」入口，可写多组，按顺序显示；不写则不显示该区块。
+# 必须写在 [contact] 其他设置之后、下一个 [段落] 之前。
+# min_class：用户等级不低于此值才显示链接（0 为所有人可见），否则只显示标题和“购买套餐后可见”。
+# url 只能是 https / http / tg / mailto 链接。
+# [[contact.group_links]]
+# title = "Telegram(VIP可见)"
+# text = "点击加入TG群"
+# url = "https://t.me/example_group"
+# min_class = 1
+# [[contact.group_links]]
+# title = "管理员TG(VIP可见)"
+# text = "点击发起TG对话"
+# url = "https://t.me/example_admin"
+# min_class = 1
+
+[display]
+sales_period = "30"                 # 后台销售统计周期：expire（按套餐有效期）或天数
+enable_flag = false                 # 节点列表显示国旗
+flag_regex = '^\S+\s'               # 从节点名称中取国家/地区的正则（原版 /.*?(?=\s)/）
+enable_donate = false               # 捐赠页与充值时的 Telegram 捐赠通知
+display_ios_class = -1              # 用户等级不低于此值时显示 iOS 共享帐号，-1 不显示
+display_ios_topup = 0.0             # 累计充值不低于此金额（元）时显示
+ios_account = ""
+ios_password = ""
+jump_delay = 1200                   # 操作成功后跳转前的等待时间（毫秒）
+enable_login_bind_ip = false        # 登录状态与 IP 绑定，IP 变化后需重新登录
+login_warn = false                  # 异地登录邮件提醒
+speedtest_duration = 6              # 节点测速记录显示的时长（小时）
+qqwry_path = "data/qqwry.dat"       # 纯真 IP 库路径，文件不存在时不显示 IP 归属地
+
+[jobs]                              # 定时任务由程序内置调度，无需配置 crontab
+enable = true                       # 在本实例运行定时任务（多实例部署时同一时刻只有一个实例执行）
+daily_mail_time = "22:30"           # 每日流量报告邮件的发送时间，空字符串不发送
+finance_mail = false                # 财务日报 / 周报 / 月报（发给管理员）
+detect_gfw = false                  # 节点被墙检测
+sync_node = true                    # 每分钟解析节点域名、更新节点 IP
+
+[detect]
+gfw_interval = 3600                 # 被墙检测间隔（秒）
+gfw_port = 22                       # 检测的端口
+gfw_url = "https://cn-qz-tcping.torch.njs.app/{ip}/{port}"  # 国内 TCPing 接口
+gfw_count = 3                       # 连续失败多少次判定为被墙
+enable_detect_offline = true        # 节点掉线 / 恢复通知
+detect_offline_use_scftqq = true    # 掉线通知同时使用 Server 酱
+
+[dns]
+cloudflare_enable = false           # 添加节点时把节点域名的 A 记录指向节点 IP
+cloudflare_email = ""               # 使用 Global API Key 时填写帐号邮箱；使用 API Token（推荐）时留空
+cloudflare_key = ""                 # Global API Key 或 API Token（建议用环境变量 NIUNIU_DNS_CLOUDFLARE_KEY）
+cloudflare_name = ""                # 域名，例如 example.com
+
+[payment]
+system = "none"                     # 在线支付渠道：none / f2fpay（支付宝当面付）；其他原版渠道尚未移植
+amount = [2, 23, 233, 2333, 23333]
+# 购买说明：显示在“充值”和“套餐购买”页面顶部（纯文本，可用 \n 换行），为空时不显示。不开放在线支付时可写：
+#   notice = "添加微信 xxx 好友购买套餐"
+notice = ""
+# 支付宝当面付（system = "f2fpay"）。密钥可以是 PEM，也可以是开放平台给出的一行 Base64。
+# 私钥请用环境变量提供：NIUNIU_PAYMENT_MERCHANT_PRIVATE_KEY、NIUNIU_PAYMENT_ALIPAY_PUBLIC_KEY
+f2fpay_app_id = ""
+merchant_private_key = ""
+alipay_public_key = ""
+f2f_notify_url = ""                 # 为空时使用 base_url + /payment/notify
+f2f_gateway = "https://openapi.alipay.com/gateway.do"
+
+[radius]
+enable = false                      # 原版 enable_radius：同步 VPN 帐号与 NAS 到 FreeRADIUS 数据库
+secret = ""                         # 原版 radius_secret：写入 NAS 表的共享密钥
+
+[radius.db]                         # 原版 radius_db_*；参数与 [database] 相同
+host = "127.0.0.1"
+port = 3306
+name = "radius"
+user = "radius"
+password = ""                       # 建议用环境变量 NIUNIU_RADIUS_DB_PASSWORD
+tls_mode = "verify"

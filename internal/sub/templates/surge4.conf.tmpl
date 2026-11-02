@@ -1,0 +1,31 @@
+# niuniupanel: Surge 4 (4.2.1+); SS2022 / VMess, no VLESS, AnyTLS or legacy SS/SSR.
+# This profile contains private node credentials. Do not share it.
+[General]
+loglevel = notify
+ipv6 = false
+allow-wifi-access = false
+http-listen = 127.0.0.1:6152
+socks5-listen = 127.0.0.1:6153
+skip-proxy = {{join .Bypass ", "}}, {{join .LocalNames ", "}}
+tun-excluded-routes = {{join .Bypass ", "}}
+# Local / direct resolution: one fixed AliDNS DoH; no system or multi-DNS race.
+dns-server = 223.5.5.5
+doh-server = https://dns.alidns.com/dns-query
+doh-follow-outbound-mode = false
+doh-skip-cert-verification = false
+hijack-dns = *:53
+always-real-ip = {{join .LocalNames ", "}}
+internet-test-url = http://www.apple.com/library/test/success.html
+proxy-test-url = http://cp.cloudflare.com/generate_204
+test-timeout = 5
+
+{{template "client-proxies" .}}
+{{template "client-groups" .}}
+[Rule]
+{{template "client-local-rules" .}}{{template "client-domain-rules" .}}
+# All upstream IP rules use no-resolve; unknown domains keep their remote DNS path.
+{{range .RuleSets}}RULE-SET,{{.URL}},{{.Policy}},no-resolve
+{{end}}GEOIP,CN,🍂 Domestic,no-resolve
+FINAL,☁️ Others,dns-failed
+
+{{template "client-hosts" .}}

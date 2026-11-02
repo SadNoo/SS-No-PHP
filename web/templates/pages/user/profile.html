@@ -1,0 +1,152 @@
+{{define "page"}}{{template "partials/user/main" $}}
+
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">我的账户</h1>
+        </div>
+    </div>
+    <div class="container">
+        <section class="content-inner margin-top-no">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-inner">
+                                    {{if peq (cfg "enable_kill") "true"}}
+                                        <div class="cardbtn-edit">
+                                            <div class="card-heading">我的帐号</div>
+                                            <div class="account-flex">
+                                                <span>注销账号</span>
+                                                <a class="btn btn-flat" href="kill">
+                                                    <span class="icon">not_interested</span>&nbsp;
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {{end}}
+                                    <dl class="dl-horizontal">
+                                        <dt>用户名</dt>
+                                        <dd>{{$.User.UserName}}</dd>
+                                        <dt>邮箱</dt>
+                                        <dd>{{$.User.Email}}</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="card">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-doubleinner">
+                                    <p class="card-heading">最近五分钟使用IP</p>
+                                    <p>请确认都为自己的IP，如有异常请及时修改连接密码。</p>
+                                </div>
+                                <div class="card-table">
+                                    <div class="table-responsive table-user">
+                                        <table class="table table-fixed">
+                                            <tr>
+
+                                                <th>IP</th>
+                                                <th>归属地</th>
+                                            </tr>
+                                            {{range $x := $.Data.userip}}
+                                                <tr>
+
+                                                    <td>{{$x.IP}}</td>
+                                                    <td>{{$x.Location}}</td>
+                                                </tr>
+                                            {{end}}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="card">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-doubleinner">
+                                    <p class="card-heading">最近十次登录IP</p>
+                                    <p>请确认都为自己的IP，如有异常请及时修改密码。</p>
+                                </div>
+                                <div class="card-table">
+                                    <div class="table-responsive table-user">
+                                        <table class="table table-fixed">
+                                            <tr>
+
+                                                <th>IP</th>
+                                                <th>归属地</th>
+                                            </tr>
+                                            {{range $x := $.Data.userloginip}}
+                                                <tr>
+
+                                                    <td>{{$x.IP}}</td>
+                                                    <td>{{$x.Location}}</td>
+                                                </tr>
+                                            {{end}}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="card">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-doubleinner">
+                                    <p class="card-heading">返利记录</p>
+                                </div>
+
+                                <div class="card-table">
+                                    <div class="table-responsive table-user">
+                                        {{$.Data.paybacks.Render}}
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>###</th>
+                                                <th>返利用户</th>
+                                                <th>返利金额</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{range $payback := $.Data.paybacks.Items}}
+                                                <tr>
+                                                    <td><b>{{$payback.ID}}</b></td>
+                                                    {{if truthy (pne $payback.User nil)}}
+                                                        <td>{{$payback.User.UserName}}
+                                                        </td>
+                                                    {{else}}
+                                                        <td>已注销
+                                                        </td>
+                                                    {{end}}
+                                                    </td>
+                                                    <td>{{$payback.RefGet}} 元</td>
+                                                </tr>
+                                            {{end}}
+                                            </tbody>
+                                        </table>
+                                        {{$.Data.paybacks.Render}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</main>
+
+
+{{template "partials/user/footer" $}}{{end}}

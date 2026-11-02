@@ -1,0 +1,32 @@
+# niuniupanel: Surge 5; SS2022 / VMess / AnyTLS, no VLESS or legacy SS/SSR.
+# AnyTLS requires Surge iOS 5.17.0+ or Mac 6.4.3+.
+# This profile contains private node credentials. Do not share it.
+[General]
+loglevel = notify
+ipv6 = false
+allow-wifi-access = false
+http-listen = 127.0.0.1:6152
+socks5-listen = 127.0.0.1:6153
+skip-proxy = {{join .Bypass ", "}}, {{join .LocalNames ", "}}
+tun-excluded-routes = {{join .Bypass ", "}}
+# Local / direct resolution: one fixed AliDNS DoH; no system or multi-DNS race.
+dns-server = 223.5.5.5
+encrypted-dns-server = https://dns.alidns.com/dns-query
+encrypted-dns-follow-outbound-mode = false
+encrypted-dns-skip-cert-verification = false
+hijack-dns = *:53
+always-real-ip = {{join .LocalNames ", "}}
+internet-test-url = http://www.apple.com/library/test/success.html
+proxy-test-url = http://cp.cloudflare.com/generate_204
+test-timeout = 5
+
+{{template "client-proxies" .}}
+{{template "client-groups" .}}
+[Rule]
+{{template "client-local-rules" .}}{{template "client-domain-rules" .}}
+# All upstream IP rules use no-resolve; unknown domains keep their remote DNS path.
+{{range .RuleSets}}RULE-SET,{{.URL}},{{.Policy}},no-resolve
+{{end}}GEOIP,CN,🍂 Domestic,no-resolve
+FINAL,☁️ Others,dns-failed
+
+{{template "client-hosts" .}}

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: niuniupanel_test
+          MYSQL_USER: panel
+          MYSQL_PASSWORD: panel
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s --health-timeout=3s --health-retries=20
+    env:
+      NIUNIU_TEST_MYSQL_DSN: root:root@tcp(127.0.0.1:3306)/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: 依赖完整性
+        run: go mod verify
+      - name: 格式与静态检查
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+      - name: 订阅中心脚本测试
+        run: node --test web/tests/subscription-center.test.cjs
+      - name: 测试
+        run: go test -race -count=1 ./...
+      - name: 漏洞检查
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+      - name: 编译
+        run: CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_SHA::12}" -o bin/panel ./cmd/panel
+      - name: Docker 构建上下文检查（部署秘密不进入构建）
+        run: bash deploy/check-build-context.sh
+      - name: 升级不改变每日备份定时任务的启用状态
+        run: bash deploy/test-backup-timer.sh

@@ -1,0 +1,17 @@
+#subscription-center .subscription-card { border: 1px solid #e2e5ed; border-radius: 10px; padding: 20px 20px 16px; margin: 16px 0; overflow-wrap: anywhere; }
+#subscription-center h3 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+#subscription-center .sub-note { color: #6b7280; margin: 0 0 6px; }
+#subscription-center label { display: block; margin: 14px 0 6px; }
+#subscription-center select { max-width: 100%; }
+#subscription-center #sb-version, #subscription-center #sub-line { display: block; width: 100%; height: 42px; border: 1px solid #e2e5ed; border-radius: 6px; background: #f7f8fa; color: #374151; font-size: 16px; padding: 0 12px; opacity: 1; -webkit-text-fill-color: #374151; }
+#subscription-center .sub-caption { color: #6b7280; margin: 8px 0 12px; }
+#subscription-center .sub-modes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+#subscription-center .sub-mode { min-height: 56px; padding: 8px; border: 1px solid #e2e5ed; border-radius: 6px; background: #f7f8fa; color: #374151; line-height: 1.4; cursor: pointer; }
+#subscription-center .sub-mode.active { border-color: #90caf9; background: #e8f4fe; color: #1e88e5; }
+#subscription-center .sub-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+#subscription-center .sub-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 0; border-radius: 8px; background: #f3f4f6; color: #2196f3; font-size: 15px; line-height: 1.5; cursor: pointer; text-decoration: none; }
+#subscription-center .sub-btn:hover, #subscription-center .sub-btn:focus { background: #e8eaee; color: #1976d2; text-decoration: none; }
+#subscription-center .sub-btn .icon { font-size: 20px; }
+#subscription-center .sub-mode:focus-visible, #subscription-center .sub-btn:focus-visible { outline: 2px solid #1e88e5; outline-offset: 2px; }
+#subscription-center .sub-message { min-height: 1.5em; margin: 8px 0 0; }
+@media (max-width: 480px) { #subscription-center .sub-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); } #subscription-center .subscription-card { padding: 16px; } }

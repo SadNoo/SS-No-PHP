@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain": [
+        "guzzoni.apple.com",
+        "mask-api.fe.apple-dns.net",
+        "mask-api.icloud.com",
+        "mask-t.apple-dns.net",
+        "mask.apple-dns.net",
+        "seed.siri.apple.com",
+        "probe.icloud.com",
+        "metrics.icloud.com",
+        "mask-api.fe2.apple-dns.net",
+        "apple-relay.akamaized.net",
+        "apple-carry-relay.cloudflare.com",
+        "api-siri-prod.apple.com"
+      ],
+      "domain_suffix": [
+        "smoot.apple.com",
+        "apple-relay.apple.com",
+        "apple-relay.cloudflare.com",
+        "apple-relay.fastly-edge.com",
+        "apple-relay.mask.apple-dns.net",
+        "cp4.cloudflare.com",
+        "gspe1-ssl.ls.apple.com",
+        "gateway.icloud.com",
+        "ls.apple.com",
+        "mask-h2.icloud.com",
+        "mask.icloud.com",
+        "apps.mzstatic.com"
+      ],
+      "domain_keyword": "siri"
+    },
+    {
+      "domain": [
+        "chat.openai.com.cdn.cloudflare.net",
+        "chat.openai.com",
+        "openai-api.arkoselabs.com",
+        "openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net",
+        "openaicomproductionae4b.blob.core.windows.net",
+        "production-openaicom-storage.azureedge.net",
+        "android.chat.openai.com",
+        "desktop.chat.openai.com",
+        "ios.chat.openai.com",
+        "tcr9i.chat.openai.com",
+        "rum.browser-intake-datadoghq.com",
+        "setup.auth.openai.com",
+        "setup.workos.com",
+        "forwarder.workos.com",
+        "images.workoscdn.com",
+        "js.intercomcdn.com",
+        "js.stripe.com",
+        "o207216.ingest.sentry.io",
+        "o33249.ingest.sentry.io",
+        "ws.chatgpt.com",
+        "auth0.openai.com",
+        "challenges.cloudflare.com"
+      ],
+      "domain_suffix": [
+        "chatgpt.com",
+        "chatgpt.livekit.cloud",
+        "client-api.arkoselabs.com",
+        "host.livekit.cloud",
+        "humb.apple.com",
+        "turn.livekit.cloud",
+        "oaistatic.com",
+        "oaiusercontent.com",
+        "openai.com",
+        "sora.com",
+        "openaiapi-site.azureedge.net",
+        "openaicom.imgix.net",
+        "auth.openai.com",
+        "ct.sendgrid.net",
+        "cdn.openaimerge.com",
+        "cdn.workos.com",
+        "oaistatsig.com",
+        "workos.imgix.net"
+      ]
+    }
+  ]
+}

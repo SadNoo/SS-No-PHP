@@ -1,0 +1,140 @@
+{{define "page"}}{{template "partials/admin/main" $}}
+
+{{/* 用户购买明细（后台用户列表「查套餐」）：为用户添加或购买套餐，查看与删除购买记录。 */}}
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">#{{$.Data.edit_user.ID}} [{{$.Data.edit_user.UserName}}] 用户购买明细</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-lg-12 col-sm-12">
+            <section class="content-inner margin-top-no">
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="buy_shop">选择套餐</label>
+                                <select id="buy_shop" class="form-control maxwidth-edit">
+                                    <option value="">请选择套餐</option>
+                                    {{range $.Data.shops}}<option value="{{.ID}}">{{.Name}}（{{.Price}} 元）</option>
+                                    {{end}}</select>
+                            </div>
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="buy_type">类型</label>
+                                <select id="buy_type" class="form-control maxwidth-edit">
+                                    <option value="0">添加（不扣除余额）</option>
+                                    <option value="1">购买（从该用户余额扣除套餐价格）</option>
+                                </select>
+                            </div>
+                            <p class="form-control-guide"><i class="material-icons">info</i>当前余额：{{$.Data.edit_user.Money}} 元。添加或购买后，该用户其他套餐的自动续费会被关闭，与用户自己购买相同。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-10 col-md-push-1">
+                                        <button id="buy_submit" type="button"
+                                                class="btn btn-block btn-brand waves-attach waves-light">添加</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <p>显示表项:
+                                {{template "partials/table/checkbox" $}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    {{template "partials/table/table" $}}
+                </div>
+
+                <div aria-hidden="true" class="modal modal-va-middle fade" id="delete_modal" role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog modal-xs">
+                        <div class="modal-content">
+                            <div class="modal-heading">
+                                <a class="modal-close" data-dismiss="modal">×</a>
+                                <h2 class="modal-title">确认要删除这条购买记录？</h2>
+                            </div>
+                            <div class="modal-inner">
+                                <p>只删除记录，不会撤销已经生效的等级、流量与有效期。</p>
+                            </div>
+                            <div class="modal-footer">
+                                <p class="text-right">
+                                    <button class="btn btn-flat btn-brand-accent waves-attach waves-effect"
+                                            data-dismiss="modal" type="button">取消
+                                    </button>
+                                    <button class="btn btn-flat btn-brand-accent waves-attach" data-dismiss="modal"
+                                            id="delete_input" type="button">确定
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{template "partials/dialog" $}}
+        </div>
+    </div>
+</main>
+
+{{template "partials/admin/footer" $}}
+
+<script nonce="{{$.Nonce}}">
+    function delete_modal_show(id) {
+        deleteid = id;
+        $("#delete_modal").modal();
+    }
+
+    {{template "partials/table/js_1" $}}
+
+    window.addEventListener('load', () => {
+        {{template "partials/table/js_2" $}}
+
+        function showResult(data) {
+            $("#result").modal();
+            $$.getElementById('msg').innerHTML = data.msg;
+        }
+
+        $$.getElementById('delete_input').addEventListener('click', () => {
+            $.ajax({
+                type: "DELETE",
+                url: "bought",
+                dataType: "json",
+                data: {id: deleteid},
+                success: data => {
+                    showResult(data);
+                    if (data.ret) table_1.ajax.reload(null, false);
+                },
+                error: jqXHR => showResult({msg: `${jqXHR.status} 发生了错误。`})
+            });
+        });
+
+        $$.getElementById('buy_submit').addEventListener('click', () => {
+            $.ajax({
+                type: "POST",
+                url: "bought",
+                dataType: "json",
+                data: {shop: $$getValue('buy_shop'), type: $$getValue('buy_type')},
+                success: data => {
+                    showResult(data);
+                    if (data.ret) window.setTimeout(() => window.location.reload(), {{cfg "jump_delay"}});
+                },
+                error: jqXHR => showResult({msg: `${jqXHR.status} 发生了错误。`})
+            });
+        });
+    });
+</script>{{end}}

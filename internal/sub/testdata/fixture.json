@@ -1,0 +1,29 @@
+{
+  "users": [
+    {"id": 1, "user_name": "alice", "email": "a@x.com", "passwd": "pa55", "port": 10001, "method": "chacha20-ietf", "protocol": "auth_aes128_md5", "protocol_param": "", "obfs": "http_simple_compatible", "obfs_param": "cdn.cn", "is_multi_user": 0, "is_admin": 0, "class": 1, "node_group": 1, "u": 1073741824, "d": 536870912, "transfer_enable": 10737418240, "class_expire": "2030-01-02 03:04:05", "expire_in": "2099-06-04 00:05:00"},
+    {"id": 2, "user_name": "admin", "email": "b@x.com", "passwd": "adm1n", "port": 10002, "method": "aes-256-gcm", "protocol": "origin", "protocol_param": "", "obfs": "plain", "obfs_param": "", "is_multi_user": 0, "is_admin": 1, "class": 0, "node_group": 9, "u": 0, "d": 0, "transfer_enable": 0, "class_expire": "1989-06-04 00:05:00", "expire_in": "2099-06-04 00:05:00"},
+    {"id": 3, "user_name": "mu1", "email": "c@x.com", "passwd": "mupass1", "port": 10010, "method": "aes-128-gcm", "protocol": "origin", "protocol_param": "", "obfs": "simple_obfs_http", "obfs_param": "", "is_multi_user": 1, "is_admin": 0, "class": 0, "node_group": 0, "u": 0, "d": 0, "transfer_enable": 0, "class_expire": "1989-06-04 00:05:00", "expire_in": "2099-06-04 00:05:00"},
+    {"id": 4, "user_name": "mu2", "email": "d@x.com", "passwd": "mupass2", "port": 10011, "method": "chacha20-ietf", "protocol": "auth_aes128_md5", "protocol_param": "", "obfs": "tls1.2_ticket_auth", "obfs_param": "", "is_multi_user": 2, "is_admin": 0, "class": 0, "node_group": 0, "u": 0, "d": 0, "transfer_enable": 0, "class_expire": "1989-06-04 00:05:00", "expire_in": "2099-06-04 00:05:00"},
+    {"id": 5, "user_name": "bob", "email": "e@x.com", "passwd": "b0b", "port": 10003, "method": "aes-256-gcm", "protocol": "origin", "protocol_param": "", "obfs": "simple_obfs_tls_compatible", "obfs_param": "bing.com", "is_multi_user": 0, "is_admin": 0, "class": 2, "node_group": 0, "u": 5, "d": 7, "transfer_enable": 1073741824, "class_expire": "2031-05-06 07:08:09", "expire_in": "2099-06-04 00:05:00"}
+  ],
+  "nodes": [
+    {"id": 1, "name": "香港 01", "type": 1, "sort": 0, "server": "hk1.example.com", "node_class": 0, "node_group": 0, "custom_rss": 1, "mu_only": 0, "traffic_rate": 1},
+    {"id": 2, "name": "日本 02", "type": 1, "sort": 0, "server": "jp.example.com", "node_class": 1, "node_group": 1, "custom_rss": 1, "mu_only": 1, "traffic_rate": 1.5},
+    {"id": 3, "name": "美国 03", "type": 1, "sort": 0, "server": "us.example.com", "node_class": 0, "node_group": 2, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1},
+    {"id": 4, "name": "中转 04", "type": 1, "sort": 10, "server": "relay.example.com", "node_class": 0, "node_group": 0, "custom_rss": 1, "mu_only": -1, "traffic_rate": 0.5},
+    {"id": 5, "name": "落地 05", "type": 1, "sort": 0, "server": "dist.example.com", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 2},
+    {"id": 6, "name": "SS+V2 06", "type": 1, "sort": 13, "server": "v2.example.com;443;0;ws;tls;path=/ss|host=h.example.com", "node_class": 0, "node_group": 0, "custom_rss": 1, "mu_only": 0, "traffic_rate": 1},
+    {"id": 7, "name": "单端口承载A", "type": 1, "sort": 9, "server": "10010", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1},
+    {"id": 8, "name": "单端口承载B", "type": 1, "sort": 9, "server": "10011", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1},
+    {"id": 9, "name": "V2 09", "type": 1, "sort": 11, "server": "vm.example.com;443;64;ws;;path=/v|host=cdn.example.com", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1},
+    {"id": 10, "name": "V2 KCP 10", "type": 1, "sort": 11, "server": "kcp.example.com;10086;2;kcp;wechat-video", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1},
+    {"id": 11, "name": "高级节点 11", "type": 1, "sort": 0, "server": "vip.example.com", "node_class": 5, "node_group": 0, "custom_rss": 1, "mu_only": 0, "traffic_rate": 1},
+    {"id": 12, "name": "隐藏节点 12", "type": 0, "sort": 0, "server": "hidden.example.com", "node_class": 0, "node_group": 0, "custom_rss": 1, "mu_only": 0, "traffic_rate": 1},
+    {"id": 13, "name": "V2 TLS 13", "type": 1, "sort": 12, "server": "t.example.com;443;0;tls", "node_class": 0, "node_group": 0, "custom_rss": 0, "mu_only": 0, "traffic_rate": 1}
+  ],
+  "relays": [
+    {"id": 1, "user_id": 1, "source_node_id": 4, "dist_node_id": 5, "dist_ip": "1.1.1.1", "port": 0, "priority": 1},
+    {"id": 2, "user_id": 0, "source_node_id": 0, "dist_node_id": -1, "dist_ip": "", "port": 10011, "priority": 2},
+    {"id": 3, "user_id": 5, "source_node_id": 4, "dist_node_id": 1, "dist_ip": "2.2.2.2", "port": 10010, "priority": 5}
+  ]
+}

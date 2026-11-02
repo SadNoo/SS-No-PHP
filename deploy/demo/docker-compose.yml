@@ -1,0 +1,61 @@
+# 演示环境：一条命令启动面板 + MySQL + 演示数据。仅用于试用，不要用于正式环境（密钥固定、未启用 HTTPS 与数据库 TLS）。
+#
+#   cd deploy/demo
+#   docker compose up -d --build        # 首次需要几分钟编译
+#   打开 http://服务器IP:8080
+#     管理员：admin@demo.local / DemoAdmin123
+#     用户：  user@demo.local  / DemoUser123
+#   docker compose down -v              # 删除演示环境及数据
+#
+# 用域名或其他端口访问时，设置 DEMO_URL，例如：DEMO_URL=http://1.2.3.4:8080 docker compose up -d
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: demo-root
+      MYSQL_DATABASE: niuniupanel
+      MYSQL_USER: panel
+      MYSQL_PASSWORD: demo-panel
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pdemo-root", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - demo-mysql:/var/lib/mysql
+
+  panel:
+    build: ../..
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      NIUNIU_APP_NAME: niuniupanel 演示
+      NIUNIU_APP_BASE_URL: ${DEMO_URL:-http://localhost:8080}
+      NIUNIU_APP_KEY: demo-only-key-change-me-0123456789
+      NIUNIU_DATABASE_HOST: db
+      NIUNIU_DATABASE_NAME: niuniupanel
+      NIUNIU_DATABASE_USER: panel
+      NIUNIU_DATABASE_PASSWORD: demo-panel
+      NIUNIU_DATABASE_TLS_MODE: disabled          # 仅演示：容器内部网络
+      NIUNIU_SECURITY_COOKIE_SECURE: "false"      # 仅演示：未启用 HTTPS
+      NIUNIU_SECURITY_MU_KEY: demo-mu-key-0123456789
+      NIUNIU_PAYMENT_NOTICE: （演示）添加微信 xxx 好友购买套餐
+      NIUNIU_DISPLAY_ENABLE_FLAG: "true"
+      NIUNIU_CONTACT_ENABLE_ADMIN_CONTACT: "true"
+      NIUNIU_CONTACT_ADMIN_CONTACT1: 微信：xxx（演示）
+
+  seed:
+    image: mysql:8.4
+    depends_on:
+      panel:
+        condition: service_healthy
+    volumes:
+      - ./demo.sql:/demo.sql:ro
+    entrypoint: ["sh", "-c", "mysql -hdb -upanel -pdemo-panel --default-character-set=utf8mb4 niuniupanel < /demo.sql && echo 演示数据已写入"]
+    restart: "no"
+
+volumes:
+  demo-mysql:

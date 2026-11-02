@@ -1,0 +1,2788 @@
+{
+  "1.14-ordinary": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "local",
+          "tag": "local-dns"
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        }
+      ],
+      "rules": [
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "local-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "local-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "10s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8",
+          "100.64.0.0/10",
+          "fc00::/7"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "local-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8",
+            "100.64.0.0/10",
+            "fc00::/7"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "protocol": "quic",
+          "action": "reject"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.14/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "local-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    }
+  },
+  "1.14-quic": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "local",
+          "tag": "local-dns"
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        }
+      ],
+      "rules": [
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "local-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "local-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "10s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8",
+          "100.64.0.0/10",
+          "fc00::/7"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "local-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8",
+            "100.64.0.0/10",
+            "fc00::/7"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.14/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "local-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    }
+  },
+  "1.14-tailscale": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "local",
+          "tag": "local-dns"
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "tailscale",
+          "tag": "tailscale-dns",
+          "endpoint": "tailscale",
+          "accept_default_resolvers": false,
+          "accept_search_domain": true
+        }
+      ],
+      "rules": [
+        {
+          "preferred_by": "tailscale-dns",
+          "action": "route",
+          "server": "tailscale-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "local-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "local-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "10s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "local-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "preferred_by": "tailscale",
+          "action": "route",
+          "outbound": "tailscale"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "protocol": "quic",
+          "action": "reject"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.14/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "local-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    },
+    "endpoints": [
+      {
+        "type": "tailscale",
+        "tag": "tailscale",
+        "ephemeral": false,
+        "accept_routes": true,
+        "system_interface": false,
+        "ssh_server": false
+      }
+    ]
+  },
+  "1.14-tailscale-quic": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "local",
+          "tag": "local-dns"
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "tailscale",
+          "tag": "tailscale-dns",
+          "endpoint": "tailscale",
+          "accept_default_resolvers": false,
+          "accept_search_domain": true
+        }
+      ],
+      "rules": [
+        {
+          "preferred_by": "tailscale-dns",
+          "action": "route",
+          "server": "tailscale-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "local-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "local-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "10s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "local-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "preferred_by": "tailscale",
+          "action": "route",
+          "outbound": "tailscale"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.14/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "local-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    },
+    "endpoints": [
+      {
+        "type": "tailscale",
+        "tag": "tailscale",
+        "ephemeral": false,
+        "accept_routes": true,
+        "system_interface": false,
+        "ssh_server": false
+      }
+    ]
+  },
+  "1.15-ordinary": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "https",
+          "tag": "cn-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "1.1.1.1",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "cloudflare-dns.com"
+          }
+        },
+        {
+          "type": "fakeip",
+          "tag": "fakeip-dns",
+          "inet4_range": "198.18.0.0/15"
+        }
+      ],
+      "rules": [
+        {
+          "domain_suffix": [
+            "localhost",
+            "local",
+            "lan",
+            "home.arpa",
+            "in-addr.arpa",
+            "ip6.arpa"
+          ],
+          "domain_regex": [
+            "^[^.]+[.]?$"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "query_type": [
+            "A",
+            "AAAA"
+          ],
+          "action": "route",
+          "server": "fakeip-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn",
+            "geosite-netflix",
+            "SiriAI"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "3s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8",
+          "100.64.0.0/10",
+          "fc00::/7"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "cn-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8",
+            "100.64.0.0/10",
+            "fc00::/7"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "protocol": "quic",
+          "action": "reject"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.15/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "cn-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true,
+        "store_fakeip": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    }
+  },
+  "1.15-quic": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "https",
+          "tag": "cn-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "1.1.1.1",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "cloudflare-dns.com"
+          }
+        },
+        {
+          "type": "fakeip",
+          "tag": "fakeip-dns",
+          "inet4_range": "198.18.0.0/15"
+        }
+      ],
+      "rules": [
+        {
+          "domain_suffix": [
+            "localhost",
+            "local",
+            "lan",
+            "home.arpa",
+            "in-addr.arpa",
+            "ip6.arpa"
+          ],
+          "domain_regex": [
+            "^[^.]+[.]?$"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "query_type": [
+            "A",
+            "AAAA"
+          ],
+          "action": "route",
+          "server": "fakeip-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn",
+            "geosite-netflix",
+            "SiriAI"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "3s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8",
+          "100.64.0.0/10",
+          "fc00::/7"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "cn-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8",
+            "100.64.0.0/10",
+            "fc00::/7"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.15/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "cn-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true,
+        "store_fakeip": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    }
+  },
+  "1.15-tailscale": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "https",
+          "tag": "cn-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "1.1.1.1",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "cloudflare-dns.com"
+          }
+        },
+        {
+          "type": "fakeip",
+          "tag": "fakeip-dns",
+          "inet4_range": "198.18.0.0/15"
+        },
+        {
+          "type": "tailscale",
+          "tag": "tailscale-dns",
+          "endpoint": "tailscale",
+          "accept_default_resolvers": false,
+          "accept_search_domain": true
+        }
+      ],
+      "rules": [
+        {
+          "preferred_by": "tailscale-dns",
+          "action": "route",
+          "server": "tailscale-dns"
+        },
+        {
+          "domain_suffix": [
+            "localhost",
+            "local",
+            "lan",
+            "home.arpa",
+            "in-addr.arpa",
+            "ip6.arpa"
+          ],
+          "domain_regex": [
+            "^[^.]+[.]?$"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "query_type": [
+            "A",
+            "AAAA"
+          ],
+          "action": "route",
+          "server": "fakeip-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn",
+            "geosite-netflix",
+            "SiriAI"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "3s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "cn-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "preferred_by": "tailscale",
+          "action": "route",
+          "outbound": "tailscale"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "protocol": "quic",
+          "action": "reject"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.15/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "cn-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true,
+        "store_fakeip": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    },
+    "endpoints": [
+      {
+        "type": "tailscale",
+        "tag": "tailscale",
+        "ephemeral": false,
+        "accept_routes": true,
+        "system_interface": false,
+        "ssh_server": false,
+        "on_demand": true
+      }
+    ]
+  },
+  "1.15-tailscale-quic": {
+    "log": {
+      "level": "warn",
+      "timestamp": true
+    },
+    "dns": {
+      "servers": [
+        {
+          "type": "https",
+          "tag": "cn-dns",
+          "server": "223.5.5.5",
+          "server_port": 443,
+          "path": "/dns-query",
+          "tls": {
+            "enabled": true,
+            "server_name": "dns.alidns.com"
+          }
+        },
+        {
+          "type": "https",
+          "tag": "proxy-dns",
+          "server": "1.1.1.1",
+          "server_port": 443,
+          "path": "/dns-query",
+          "detour": "🍃 Proxy",
+          "tls": {
+            "enabled": true,
+            "server_name": "cloudflare-dns.com"
+          }
+        },
+        {
+          "type": "fakeip",
+          "tag": "fakeip-dns",
+          "inet4_range": "198.18.0.0/15"
+        },
+        {
+          "type": "tailscale",
+          "tag": "tailscale-dns",
+          "endpoint": "tailscale",
+          "accept_default_resolvers": false,
+          "accept_search_domain": true
+        }
+      ],
+      "rules": [
+        {
+          "preferred_by": "tailscale-dns",
+          "action": "route",
+          "server": "tailscale-dns"
+        },
+        {
+          "domain_suffix": [
+            "localhost",
+            "local",
+            "lan",
+            "home.arpa",
+            "in-addr.arpa",
+            "ip6.arpa"
+          ],
+          "domain_regex": [
+            "^[^.]+[.]?$"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "query_type": [
+            "A",
+            "AAAA"
+          ],
+          "action": "route",
+          "server": "fakeip-dns"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "server": "cn-dns"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn",
+            "geosite-netflix",
+            "SiriAI"
+          ],
+          "action": "route",
+          "server": "proxy-dns"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "server": "cn-dns"
+        }
+      ],
+      "final": "proxy-dns",
+      "strategy": "ipv4_only",
+      "cache_capacity": 4096,
+      "timeout": "3s"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "address": [
+          "172.19.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "route_exclude_address": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8"
+        ],
+        "dns_mode": "hijack"
+      }
+    ],
+    "http_clients": [
+      {
+        "tag": "rule-set-download",
+        "detour": "🍃 Proxy"
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "🍃 Proxy",
+        "outbounds": [
+          "audit-node"
+        ],
+        "default": "audit-node",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🫥SiriAI",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍎 Only",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🏖 Netflix",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "🍂 Domestic",
+        "outbounds": [
+          "direct",
+          "🍃 Proxy",
+          "audit-node"
+        ],
+        "default": "direct",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "selector",
+        "tag": "☁️ Others",
+        "outbounds": [
+          "🍃 Proxy",
+          "audit-node",
+          "direct"
+        ],
+        "default": "🍃 Proxy",
+        "interrupt_exist_connections": false
+      },
+      {
+        "type": "vmess",
+        "tag": "audit-node",
+        "server": "node.example",
+        "server_port": 443,
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "security": "auto",
+        "domain_resolver": {
+          "server": "cn-dns",
+          "strategy": "prefer_ipv4",
+          "timeout": "5s"
+        }
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "preferred_by": "tailscale",
+          "action": "route",
+          "outbound": "tailscale"
+        },
+        {
+          "ip_cidr": [
+            "10.0.0.0/8",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "::1/128",
+            "fe80::/10",
+            "ff00::/8"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "direct",
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "clash_mode": "global",
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "domain_suffix": [
+            "site1.example",
+            "site2.example"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "SiriAI"
+          ],
+          "action": "route",
+          "outbound": "🫥SiriAI"
+        },
+        {
+          "rule_set": [
+            "geosite-apple"
+          ],
+          "action": "route",
+          "outbound": "🍎 Only"
+        },
+        {
+          "rule_set": [
+            "geosite-netflix"
+          ],
+          "action": "route",
+          "outbound": "🏖 Netflix"
+        },
+        {
+          "rule_set": [
+            "geosite-geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "🍃 Proxy"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        },
+        {
+          "ip_is_private": true,
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "🍂 Domestic"
+        }
+      ],
+      "rule_set": [
+        {
+          "type": "remote",
+          "tag": "SiriAI",
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.15/SiriAI.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geosite-apple",
+            "geosite-netflix",
+            "geosite-geolocation-!cn",
+            "geosite-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        },
+        {
+          "type": "remote",
+          "tag": [
+            "geoip-cn"
+          ],
+          "format": "binary",
+          "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+          "http_client": "rule-set-download",
+          "update_interval": "1d"
+        }
+      ],
+      "final": "☁️ Others",
+      "auto_detect_interface": true,
+      "default_domain_resolver": "cn-dns",
+      "default_http_client": "rule-set-download"
+    },
+    "experimental": {
+      "cache_file": {
+        "enabled": true,
+        "store_fakeip": true
+      },
+      "clash_api": {
+        "default_mode": "rule"
+      }
+    },
+    "endpoints": [
+      {
+        "type": "tailscale",
+        "tag": "tailscale",
+        "ephemeral": false,
+        "accept_routes": true,
+        "system_interface": false,
+        "ssh_server": false,
+        "on_demand": true
+      }
+    ]
+  }
+}

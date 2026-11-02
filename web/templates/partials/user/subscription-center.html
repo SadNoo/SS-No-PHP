@@ -1,0 +1,74 @@
+{{define "partials/user/subscription-center"}}
+<div id="subscription-center" data-sub-base="{{$.Data.subscription_base}}">
+<div class="card">
+ <div class="card-main"><div class="card-inner">
+  <h2 class="card-heading">客户端订阅</h2>
+  <p><a href="/client-subscription-guide.html" target="_blank" rel="noopener noreferrer">点击进入以下客户端教程 ↗</a></p>
+  {{with $.Data.subscription_lines}}
+  <div class="sub-line">
+   <label for="sub-line">订阅线路</label>
+   <select id="sub-line" class="form-control">{{range .}}<option value="{{.Base}}">{{.Name}}</option>{{end}}</select>
+   <p class="sub-caption">主线路无法更新订阅时，切换到备用线路后重新复制或导入；各线路的订阅内容相同。</p>
+  </div>
+  {{end}}
+  <details><summary>订阅筛选与显示选项</summary>
+   <p>筛选仅限你有权使用的节点。留空保持当前输出；同时填写等级保留和排除时，以等级保留为准。</p>
+   <label for="sub-type">协议</label><select id="sub-type" class="form-control"><option value="">全部</option><option value="ss">SS（SS2022）</option><option value="ss2022">仅 SS2022</option><option value="vmess">VMess</option><option value="vless">VLESS</option><option value="anytls">AnyTLS</option></select>
+   <label for="sub-class">保留节点等级（如 0+1）</label><input id="sub-class" class="form-control" type="text" maxlength="512">
+   <label for="sub-noclass">排除节点等级（如 0）</label><input id="sub-noclass" class="form-control" type="text" maxlength="512">
+   <label for="sub-regex">节点名称正则（RE2，支持 /pattern/i）</label><input id="sub-regex" class="form-control" type="text" maxlength="512">
+   <label for="sub-emoji">地区旗帜</label><select id="sub-emoji" class="form-control"><option value="">保持当前</option><option value="1">添加可识别的旗帜</option><option value="0">不额外添加</option></select>
+   <label for="sub-extend">流量与到期信息</label><select id="sub-extend" class="form-control"><option value="">保持当前</option><option value="1">附带信息</option><option value="0">不附加正文信息</option></select>
+  </details>
+  <div class="subscription-card">
+   <h3>sing-box</h3>
+   <p class="sub-note">VMess + SS2022 + VLESS + AnyTLS 配置</p>
+   <p class="sub-note">先选择版本和模式，再复制订阅或一键导入。</p>
+   <label for="sb-version">配置版本</label>
+   <select id="sb-version" class="form-control"><option value="1.14" data-caption="1.14 兼容版 · 保持现有配置">1.14 兼容版（默认）</option><option value="1.15" data-caption="1.15 · FakeIP + Global Sniff，需要 sing-box 1.15 或更新版本">1.15 FakeIP + Global Sniff</option></select>
+   <p class="sub-caption" id="sb-version-caption" aria-live="polite">1.14 兼容版 · 保持现有配置</p>
+   <input type="hidden" id="sb-mode" value="ordinary">
+   <div class="sub-modes" role="group" aria-label="连接模式">
+    <button type="button" class="sub-mode active" aria-pressed="true" data-sb-mode="ordinary" data-caption="普通 · 保持当前默认配置">普通</button>
+    <button type="button" class="sub-mode" aria-pressed="false" data-sb-mode="quic" data-caption="QUIC · 使用 QUIC（UDP）传输，网络限制 UDP 时请换回普通">QUIC</button>
+    <button type="button" class="sub-mode" aria-pressed="false" data-sb-mode="tailscale" data-caption="Tailscale · 加入 Tailscale 组网设置">Tailscale</button>
+    <button type="button" class="sub-mode" aria-pressed="false" data-sb-mode="tailscale-quic" data-caption="Tailscale + QUIC · 同时启用以上两项">Tailscale + QUIC</button>
+   </div>
+   <p class="sub-caption" id="sb-mode-caption" aria-live="polite">普通 · 保持当前默认配置</p>
+   <div class="sub-actions">
+    <button class="sub-btn" type="button" data-sub-copy="sing-box"><i class="icon">content_copy</i>复制订阅</button>
+    <a class="sub-btn" data-sub-import="sing-box" href="#"><i class="icon">open_in_new</i>一键导入</a>
+   </div>
+  </div>
+  {{range $.Data.subscription_clients}}
+  <div class="subscription-card">
+   <h3>{{.Name}}</h3>
+   <p class="sub-note">{{.Note}}</p>
+   <div class="sub-actions">
+    {{if .CopyLabel}}<button class="sub-btn" type="button" data-sub-copy="{{.Format}}"><i class="icon">content_copy</i>{{.CopyLabel}}</button>{{end}}
+    {{if .ImportLabel}}<a class="sub-btn" data-sub-import="{{.Format}}" href="#"><i class="icon">open_in_new</i>{{.ImportLabel}}</a>{{end}}
+   </div>
+  </div>
+  {{end}}
+  <p class="sub-message" role="status" aria-live="polite"></p>
+ </div></div>
+</div>
+<div class="card">
+ <div class="card-main"><div class="card-inner">
+  <h2 class="card-heading">按协议订阅</h2>
+  {{range $.Data.protocol_subs}}
+  <div class="subscription-card">
+   <h3>{{.Name}}</h3>
+   <div class="sub-actions">
+    <button class="sub-btn" type="button" data-sub-copy="{{.Format}}"><i class="icon">content_copy</i>{{.CopyLabel}}</button>
+    {{if .AllURL}}<button class="sub-btn" type="button" data-copy-text="{{index $.Data .AllURL}}"><i class="icon">file_download</i>全部 URL</button>{{end}}
+   </div>
+  </div>
+  {{end}}
+  <p class="sub-message" role="status" aria-live="polite"></p>
+ </div></div>
+</div>
+</div>
+<link rel="stylesheet" href="/assets/css/subscription-center.css">
+<script src="/assets/js/subscription-center.js" defer></script>
+{{end}}

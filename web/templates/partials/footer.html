@@ -1,0 +1,26 @@
+{{define "partials/footer"}}<!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<footer class="ui-footer">
+    <div class="container">
+        &copy;{{phpDate "Y"}} {{cfg "appName"}}
+    </div>
+</footer>
+{{/* K11：原版此处默认加载原作者的 Google Analytics 与 perfops 统计脚本，已移除。 */}}
+
+<!-- js -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/jquery/jquery-migrate.min.js"></script>
+{{if isset $.Data.geetest_html}}
+    <script src="https://static.geetest.com/static/tools/gt.js"></script>
+{{end}}
+<script src="/theme/material/js/base.min.js"></script>
+<script src="/theme/material/js/project.min.js"></script>
+<script src="/assets/js/niuniu.js"></script>
+
+</body>
+</html>{{end}}

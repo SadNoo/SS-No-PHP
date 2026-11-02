@@ -1,0 +1,88 @@
+# 正式环境：Caddy（HTTPS，使用 Cloudflare 源服务器证书）+ 面板 + MySQL，全部在一台服务器上。
+# 不要直接运行本文件：用 ./install.sh 安装（生成 .env、Caddyfile 与随机密钥），用 ./upgrade.sh 升级。
+# 说明见 docs/deploy-docker.md。
+name: niuniupanel
+
+# 容器日志（docker compose logs）每个服务最多保留 3 个 10 MB 的文件，不会无限增长。
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?请先运行 install.sh}
+      MYSQL_DATABASE: niuniupanel
+      MYSQL_USER: panel
+      MYSQL_PASSWORD: ${DB_PASSWORD:?请先运行 install.sh}
+    command:
+      - --innodb-buffer-pool-size=${DB_BUFFER_POOL:-256M}
+      - --max-connections=200
+      # 二进制日志（MySQL 8.4 默认开启、保留 30 天）只保留 3 天：节点每分钟上报流量，30 天会占用大量磁盘。
+      # 恢复用的是 backups/ 里的每日备份，不依赖二进制日志。
+      - --binlog-expire-logs-seconds=259200
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks: [internal]
+    # 不映射端口：数据库只在容器内部网络可见
+
+  panel:
+    build: ../..
+    image: niuniupanel:local
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env.panel
+    environment:
+      NIUNIU_DATABASE_HOST: db
+      NIUNIU_DATABASE_NAME: niuniupanel
+      NIUNIU_DATABASE_USER: panel
+      NIUNIU_DATABASE_PASSWORD: ${DB_PASSWORD}
+      NIUNIU_DATABASE_TLS_MODE: disabled           # 数据库在同一台服务器的容器内部网络中
+      NIUNIU_HTTP_TRUSTED_PROXIES: 172.31.255.10/32 # 只采信 Caddy 传来的客户端 IP
+      NIUNIU_DISPLAY_QQWRY_PATH: /var/lib/niuniupanel/data/qqwry.dat
+      # 配置文件 config/config.toml（群组入口等无法写成环境变量的设置），文件不存在时只使用 .env.panel
+      NIUNIU_CONFIG: /etc/niuniupanel/config.toml
+      NIUNIU_CONFIG_OPTIONAL: "true"
+    volumes:
+      - ./data:/var/lib/niuniupanel/data:ro
+      - ./config:/etc/niuniupanel:ro
+    networks: [internal]
+
+  caddy:
+    image: caddy:2.10.2
+    restart: unless-stopped
+    logging: *logging
+    depends_on: [panel]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro
+      - caddy-data:/data
+    networks:
+      internal:
+        ipv4_address: 172.31.255.10
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.31.255.0/24
+
+volumes:
+  mysql-data:
+  caddy-data:

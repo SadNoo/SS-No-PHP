@@ -1,0 +1,10 @@
+{{define "partials/mylivechat"}}<script nonce="{{$.Nonce}}">
+    (() => {
+        var hccid = "{{cfg "mylivechat_id"}}";
+        var nt = document.createElement("script");
+        nt.async = true;
+        nt.src = "https://mylivechat.com/chatinline.aspx?hccid=" + hccid;
+        var ct = document.getElementsByTagName("script")[0];
+        ct.parentNode.insertBefore(nt, ct);
+    })();
+</script>{{end}}

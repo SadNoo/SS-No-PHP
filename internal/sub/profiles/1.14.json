@@ -1,0 +1,217 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "local",
+        "tag": "local-dns"
+      },
+      {
+        "type": "https",
+        "tag": "proxy-dns",
+        "server": "223.5.5.5",
+        "server_port": 443,
+        "path": "/dns-query",
+        "detour": "🍃 Proxy",
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.alidns.com"
+        }
+      }
+    ],
+    "rules": [
+      {
+        "clash_mode": "direct",
+        "action": "route",
+        "server": "local-dns"
+      },
+      {
+        "clash_mode": "global",
+        "action": "route",
+        "server": "proxy-dns"
+      },
+      {
+        "rule_set": [
+          "geosite-cn"
+        ],
+        "action": "route",
+        "server": "local-dns"
+      }
+    ],
+    "final": "proxy-dns",
+    "strategy": "ipv4_only",
+    "cache_capacity": 4096,
+    "timeout": "10s"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": [
+        "172.19.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "mtu": 1500,
+      "auto_route": true,
+      "route_exclude_address": [
+        "10.0.0.0/8",
+        "127.0.0.0/8",
+        "169.254.0.0/16",
+        "172.16.0.0/12",
+        "192.168.0.0/16",
+        "224.0.0.0/4",
+        "255.255.255.255/32",
+        "::1/128",
+        "fe80::/10",
+        "ff00::/8",
+        "100.64.0.0/10",
+        "fc00::/7"
+      ],
+      "dns_mode": "hijack"
+    }
+  ],
+  "http_clients": [
+    {
+      "tag": "rule-set-download",
+      "detour": "🍃 Proxy"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "ip_cidr": [
+          "10.0.0.0/8",
+          "127.0.0.0/8",
+          "169.254.0.0/16",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "224.0.0.0/4",
+          "255.255.255.255/32",
+          "::1/128",
+          "fe80::/10",
+          "ff00::/8",
+          "100.64.0.0/10",
+          "fc00::/7"
+        ],
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "protocol": "quic",
+        "action": "reject"
+      },
+      {
+        "clash_mode": "direct",
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "global",
+        "action": "route",
+        "outbound": "🍃 Proxy"
+      },
+      {
+        "rule_set": [
+          "SiriAI"
+        ],
+        "action": "route",
+        "outbound": "🫥SiriAI"
+      },
+      {
+        "rule_set": [
+          "geosite-apple"
+        ],
+        "action": "route",
+        "outbound": "🍎 Only"
+      },
+      {
+        "rule_set": [
+          "geosite-netflix"
+        ],
+        "action": "route",
+        "outbound": "🏖 Netflix"
+      },
+      {
+        "rule_set": [
+          "geosite-geolocation-!cn"
+        ],
+        "action": "route",
+        "outbound": "🍃 Proxy"
+      },
+      {
+        "rule_set": [
+          "geosite-cn"
+        ],
+        "action": "route",
+        "outbound": "🍂 Domestic"
+      },
+      {
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": [
+          "geoip-cn"
+        ],
+        "action": "route",
+        "outbound": "🍂 Domestic"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "SiriAI",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SadNoo/SS-No-PHP/main/rules/sing-box/1.14/SiriAI.srs",
+        "http_client": "rule-set-download",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": [
+          "geosite-apple",
+          "geosite-netflix",
+          "geosite-geolocation-!cn",
+          "geosite-cn"
+        ],
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+        "http_client": "rule-set-download",
+        "update_interval": "1d"
+      },
+      {
+        "type": "remote",
+        "tag": [
+          "geoip-cn"
+        ],
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/{tag}.srs",
+        "http_client": "rule-set-download",
+        "update_interval": "1d"
+      }
+    ],
+    "final": "☁️ Others",
+    "auto_detect_interface": true,
+    "default_domain_resolver": "local-dns",
+    "default_http_client": "rule-set-download"
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true
+    },
+    "clash_api": {
+      "default_mode": "rule"
+    }
+  }
+}

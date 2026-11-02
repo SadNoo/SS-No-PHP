@@ -1,0 +1,9 @@
+{{define "page"}}{{/* 节点图表片段（原版 nodeajax.tpl）。原版在片段里输出内联脚本绘图，
+严格 CSP 下不会执行；这里只输出容器和数据，由 /assets/js/node-charts.js 绘制。 */}}
+<div id="load{{$.Data.id}}_chart" style="height: 300px; width: 100%;"></div>
+<div id="up{{$.Data.id}}_chart" style="height: 300px; width: 100%;"></div>
+<div id="alive{{$.Data.id}}_chart" style="height: 300px; width: 100%;"></div>
+<div id="speedtest{{$.Data.id}}_chart" style="height: 300px; width: 100%;"></div>
+<div id="speedtest{{$.Data.id}}_ping_chart" style="height: 300px; width: 100%;"></div>
+<script type="application/json" class="node-chart-data">{{$.Data.chart_json}}</script>
+{{end}}

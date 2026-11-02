@@ -1,0 +1,21 @@
+{{define "partials/user/footer"}}<footer class="ui-footer">
+    <div class="container">
+        &copy;{{phpDate "Y"}} {{cfg "appName"}}
+    </div>
+</footer>
+{{/* K11：原版此处默认加载原作者的 Google Analytics 与 perfops 统计脚本，已移除；
+     原版还会在浏览器控制台输出数据库查询次数和耗时，属于调试信息，已移除。 */}}
+
+<!-- js -->
+<script src="/vendor/jquery-validation/jquery.validate.min.js"></script>
+{{if isset $.Data.geetest_html}}
+    <script src="https://static.geetest.com/static/tools/gt.js"></script>
+{{end}}
+<script src="/theme/material/js/base.min.js"></script>
+<script src="/theme/material/js/project.min.js"></script>
+<script src="/vendor/clipboard/clipboard.min.js"></script>
+<script src="/vendor/clipboard/clipboard-compat.js"></script>
+<script src="/assets/js/niuniu.js"></script>
+
+</body>
+</html>{{end}}

@@ -1,0 +1,356 @@
+{{define "page"}}{{template "partials/user/header_info" $}}
+
+
+{{$ssr_prefer := $.Data.ssr_prefer}}
+
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">节点信息</h1>
+        </div>
+    </div>
+    <div class="container">
+        <section class="content-inner">
+            <div class="ui-card-wrap">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <p class="card-heading">注意！</p>
+                                    <p>配置文件以及二维码请勿泄露！</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <p class="card-heading">配置信息</p>
+                                    <div class="tab-content">
+
+                                        <nav class="tab-nav">
+                                            <ul class="nav nav-list">
+                                                <li {{if truthy $ssr_prefer}}class="active"{{end}}>
+                                                    <a class="" data-toggle="tab" href="#ssr_info"><i
+                                                                class="icon icon-lg">airplanemode_active</i>&nbsp;ShadowsocksR</a>
+                                                </li>
+                                                <li {{if truthy (not (truthy $ssr_prefer))}}class="active"{{end}}>
+                                                    <a class="" data-toggle="tab" href="#ss_info"><i
+                                                                class="icon icon-lg">flight_takeoff</i>&nbsp;Shadowsocks</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                        <div class="tab-pane fade {{if truthy $ssr_prefer}}active in{{end}}" id="ssr_info">
+                                            {{if truthy $.Data.ssr_can}}
+                                                {{if truthy (peq $.Data.ssr_item.Obfs "v2ray")}}
+                                                    <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                        页面修改后再来查看此处。</p>
+                                                {{else}}
+                                                    <p>服务器地址：{{$.Data.ssr_item.Address}}<br>
+                                                        服务器端口：{{$.Data.ssr_item.Port}}<br>
+                                                        加密方式：{{$.Data.ssr_item.Method}}<br>
+                                                        密码：{{$.Data.ssr_item.Passwd}}<br>
+                                                        协议：{{$.Data.ssr_item.Protocol}}<br>
+                                                        协议参数：{{$.Data.ssr_item.ProtocolParam}}<br>
+                                                        混淆：{{$.Data.ssr_item.Obfs}}<br>
+                                                        混淆参数：{{$.Data.ssr_item.ObfsParam}}<br></p>
+                                                {{end}}
+                                            {{else}}
+                                                <p>您好，您目前的 加密方式，混淆，或者协议设置在 ShadowsocksR 客户端下无法连接。请您选用 Shadowsocks
+                                                    客户端来连接，或者到 资料编辑 页面修改后再来查看此处。</p>
+                                                <p>同时, ShadowsocksR 单端口多用户的连接不受您设置的影响,您可以在此使用相应的客户端进行连接~</p>
+                                            {{end}}
+                                        </div>
+                                        <div class="tab-pane fade {{if truthy (not (truthy $ssr_prefer))}}active in{{end}}" id="ss_info">
+                                            {{if truthy $.Data.ss_can}}
+                                                {{if truthy (and (truthy (peq $.Data.ss_item.Obfs "v2ray")) (truthy (pne $.Data.method_connect 2)))}}
+                                                    <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                        页面修改后再来查看此处。</p>
+                                                {{else}}
+                                                    <p>服务器地址：{{$.Data.ss_item.Address}}<br>
+                                                        服务器端口：{{$.Data.ss_item.Port}}<br>
+                                                        加密方式：{{$.Data.ss_item.Method}}<br>
+                                                        密码：{{$.Data.ss_item.Passwd}}<br>
+                                                        混淆：{{$.Data.ss_item.Obfs}}<br>
+                                                        混淆参数：{{$.Data.ss_item.ObfsParam}}<br></p>
+                                                {{end}}
+                                            {{else}}
+                                                <p>您好，您目前的 加密方式，混淆，或者协议设置在 Shadowsocks 客户端下无法连接。请您选用 ShadowsocksR
+                                                    客户端来连接，或者到 资料编辑 页面修改后再来查看此处。</p>
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <p class="card-heading">配置Json</p>
+
+                                    <nav class="tab-nav">
+                                        <ul class="nav nav-list">
+                                            <li {{if truthy $ssr_prefer}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ssr_json"><i class="icon icon-lg">airplanemode_active</i>&nbsp;ShadowsocksR</a>
+                                            </li>
+                                            <li {{if truthy (not (truthy $ssr_prefer))}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ss_json"><i class="icon icon-lg">flight_takeoff</i>&nbsp;Shadowsocks</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                    <div class="tab-pane fade {{if truthy $ssr_prefer}}active in{{end}}" id="ssr_json">
+                                        {{if truthy $.Data.ssr_can}}
+                                            {{if truthy (peq $.Data.ssr_item.Obfs "v2ray")}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <pre>
+{
+    "server": "{{$.Data.ssr_item.Address}}",
+    "local_address": "127.0.0.1",
+    "local_port": 1080,
+    "timeout": 300,
+    "workers": 1,
+    "server_port": {{$.Data.ssr_item.Port}},
+    "password": "{{$.Data.ssr_item.Passwd}}",
+    "method": "{{$.Data.ssr_item.Method}}",
+    "obfs": "{{$.Data.ssr_item.Obfs}}",
+    "obfs_param": "{{$.Data.ssr_item.ObfsParam}}",
+    "protocol": "{{$.Data.ssr_item.Protocol}}",
+    "protocol_param": "{{$.Data.ssr_item.ProtocolParam}}"
+}
+                                               </pre>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 ShadowsocksR 客户端下无法连接。请您选用 Shadowsocks 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+                                    <div class="tab-pane fade {{if truthy (not (truthy $ssr_prefer))}}active in{{end}}" id="ss_json">
+                                        {{if truthy $.Data.ss_can}}
+                                            {{if truthy (and (truthy (peq $.Data.ss_item.Obfs "v2ray")) (truthy (pne $.Data.method_connect 2)))}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <pre>
+{
+        "server": "{{$.Data.ss_item.Address}}",
+        "local_address": "127.0.0.1",
+        "local_port": 1080,
+        "timeout": 300,
+        "workers": 1,
+        "server_port": {{$.Data.ss_item.Port}},
+        "password": "{{$.Data.ss_item.Passwd}}",
+        "method": "{{$.Data.ss_item.Method}}",
+        "plugin": "{{$.Data.ss_json_obfs}}"
+}
+</pre>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 Shadowsocks 客户端下无法连接。请您选用 ShadowsocksR 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <p class="card-heading">配置链接</p>
+
+                                    <nav class="tab-nav">
+                                        <ul class="nav nav-list">
+                                            <li {{if truthy $ssr_prefer}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ssr_url"><i class="icon icon-lg">airplanemode_active</i>&nbsp;ShadowsocksR</a>
+                                            </li>
+                                            <li {{if truthy (not (truthy $ssr_prefer))}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ss_url"><i class="icon icon-lg">flight_takeoff</i>&nbsp;Shadowsocks</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                    <div class="tab-pane fade {{if truthy $ssr_prefer}}active in{{end}}" id="ssr_url">
+                                        {{if truthy $.Data.ssr_can}}
+                                            {{if truthy (peq $.Data.ssr_item.Obfs "v2ray")}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <p><a class="copy-text"
+                                                      data-clipboard-text="{{$.Data.ssr_url}}">点我复制配置链接</a>
+                                                </p>
+                                                <p><a href="{{$.Data.ssr_url}}">iOS 上用 Safari
+                                                        打开点我即可直接添加</a></p>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 ShadowsocksR 客户端下无法连接。请您选用 Shadowsocks 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+                                    <div class="tab-pane fade {{if truthy (not (truthy $ssr_prefer))}}active in{{end}}" id="ss_url">
+                                        {{if truthy $.Data.ss_can}}
+                                            {{if truthy (and (truthy (peq $.Data.ss_item.Obfs "v2ray")) (truthy (pne $.Data.method_connect 2)))}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <p><a class="copy-text"
+                                                      data-clipboard-text="{{$.Data.ss_url}}">点我复制配置链接</a>
+                                                </p>
+                                                <p><a href="{{$.Data.ss_url}}">iOS 上用 Safari 打开点我即可直接添加</a>
+                                                </p>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 Shadowsocks 客户端下无法连接。请您选用 ShadowsocksR 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+                                    <p class="card-heading">配置二维码</p>
+
+                                    <nav class="tab-nav">
+                                        <ul class="nav nav-list">
+                                            <li {{if truthy $ssr_prefer}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ssr_qrcode">
+                                                    <i class="icon icon-lg">airplanemode_active</i>
+                                                    &nbsp;ShadowsocksR
+                                                </a>
+                                            </li>
+                                            <li {{if truthy (not (truthy $ssr_prefer))}}class="active"{{end}}>
+                                                <a class="" data-toggle="tab" href="#ss_qrcode">
+                                                    <i class="icon icon-lg">flight_takeoff</i>
+                                                    &nbsp;Shadowsocks
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                    <div class="tab-pane fade {{if truthy $ssr_prefer}}active in{{end}}" id="ssr_qrcode">
+                                        {{if truthy $.Data.ssr_can}}
+                                            {{if truthy (peq $.Data.ssr_item.Obfs "v2ray")}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <div class="text-center">
+                                                    <div id="ss-qr-n" class="qr-center"></div>
+                                                </div>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 ShadowsocksR 客户端下无法连接。请您选用 Shadowsocks 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+                                    <div class="tab-pane fade {{if truthy (not (truthy $ssr_prefer))}}active in{{end}}" id="ss_qrcode">
+                                        {{if truthy $.Data.ss_can}}
+                                            {{if truthy (and (truthy (peq $.Data.ss_item.Obfs "v2ray")) (truthy (pne $.Data.method_connect 2)))}}
+                                                <p>您好，Shadowsocks V2Ray-Plugin 节点需要您的加密方式使用 AEAD 系列。请您到 资料编辑
+                                                    页面修改后再来查看此处。</p>
+                                            {{else}}
+                                                <nav class="tab-nav">
+                                                    <ul class="nav nav-list">
+                                                        <li class="active">
+                                                            <a class="" data-toggle="tab" href="#ss_qrcode_normal">
+                                                                <i class="icon icon-lg">android</i>
+                                                                &nbsp;其他平台
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="" data-toggle="tab" href="#ss_qrcode_win">
+                                                                <i class="icon icon-lg">desktop_windows</i>
+                                                                &nbsp;Windows
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                                <div class="tab-pane fade active in" id="ss_qrcode_normal">
+                                                    <div class="text-center">
+                                                        <div id="ss-qr" class="qr-center"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="ss_qrcode_win">
+                                                    <div class="text-center">
+                                                        <div id="ss-qr-win" class="qr-center"></div>
+                                                    </div>
+                                                </div>
+                                            {{end}}
+                                        {{else}}
+                                            <p>您好，您目前的 加密方式，混淆，或者协议设置在 Shadowsocks 客户端下无法连接。请您选用 ShadowsocksR 客户端来连接，或者到
+                                                资料编辑 页面修改后再来查看此处。</p>
+                                        {{end}}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {{template "partials/dialog" $}}
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+
+{{template "partials/user/footer" $}}
+
+
+<script src="/vendor/qrcode/qrcode-generator.js"></script>
+<script src="/vendor/qrcode/qrcode-compat.js"></script>
+
+<script nonce="{{$.Nonce}}">
+    $(function () {
+        new Clipboard('.copy-text');
+    });
+    $(".copy-text").click(function () {
+        $("#result").modal();
+        $$.getElementById('msg').innerHTML = '已拷贝订阅链接，请您继续接下来的操作'
+    });
+
+    {{if truthy $.Data.ss_can}}
+    var text_qrcode = '{{$.Data.ss_url}}',
+            text_qrcode_win = '{{$.Data.ss_url_win}}';
+
+    var qrcode1 = new QRCode(document.getElementById("ss-qr"), {
+                correctLevel: 3
+            }),
+            qrcode2 = new QRCode(document.getElementById("ss-qr-win"), {
+                correctLevel: 3
+            });
+
+    qrcode1.clear();
+    qrcode1.makeCode(text_qrcode);
+    qrcode2.clear();
+    qrcode2.makeCode(text_qrcode_win);
+    {{end}}
+
+    {{if truthy $.Data.ssr_can}}
+    var text_qrcode2 = '{{$.Data.ssr_url}}';
+    var qrcode3 = new QRCode(document.getElementById("ss-qr-n"), {
+        correctLevel: 3
+    });
+    qrcode3.clear();
+    qrcode3.makeCode(text_qrcode2);
+    {{end}}
+</script>{{end}}

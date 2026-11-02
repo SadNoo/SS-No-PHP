@@ -1,0 +1,105 @@
+{{define "page"}}{{template "partials/admin/main" $}}
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">编辑公告 #{{$.Data.ann.ID}}</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-lg-12 col-md-12">
+            <section class="content-inner margin-top-no">
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="content">内容</label>
+                                <link rel="stylesheet"
+                                      href="/vendor/editor.md/css/editormd.min.css"/>
+                                <div id="editormd">
+                                    <textarea style="display:none;" id="content">{{$.Data.ann.Markdown}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-10 col-md-push-1">
+                                        <button id="submit" type="submit"
+                                                class="btn btn-block btn-brand waves-attach waves-light">修改
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{template "partials/dialog" $}}
+
+        </div>
+    </div>
+</main>
+
+{{template "partials/admin/footer" $}}
+
+<script src="/vendor/editor.md/editormd.min.js"></script>
+<script nonce="{{$.Nonce}}">
+    (() => {
+        editor = editormd("editormd", {
+            path: "/vendor/editor.md/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+            toolbarIcons: function () { return editormd.toolbarModes.full.filter(function (n) { return n !== "emoji"; }); },
+            height: 720,
+            saveHTMLToTextarea: true,
+            emoji: false  // 表情图片来自外部 CDN，内容安全策略不允许加载
+        });
+
+        /*
+        // or
+        var editor = editormd({
+            id   : "editormd",
+            path : "../lib/"
+        });
+        */
+    })();
+
+    window.addEventListener('load', () => {
+        function submit() {
+            $.ajax({
+                type: "PUT",
+                url: "/admin/announcement/{{$.Data.ann.ID}}",
+                dataType: "json",
+                data: {
+                    content: editor.getHTML(),
+                    markdown: editor.getMarkdown()
+                },
+                success: data => {
+                    if (data.ret) {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        jumpTo(top.document.referrer, {{cfg "jump_delay"}});
+                    } else {
+                        $("#result").modal();
+                        document.getElementById('msg').innerHTML = data.msg;
+                    }
+                },
+                error: jqXHR => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `发生错误：${
+                            jqXHR.status
+                            }`;
+                }
+            });
+        }
+
+        $$.getElementById('submit').addEventListener('click', submit);
+
+    });
+
+</script>{{end}}

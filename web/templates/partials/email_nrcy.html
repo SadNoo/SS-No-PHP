@@ -1,0 +1,16 @@
+{{define "partials/email_nrcy"}}<ul>
+    <img src="/images/email_nrcy.jpg" height="458" width="468">
+    <br/>
+    {{if peq (cfg "enable_admin_contact") "true"}}
+        <p>如果发现“收信查询”中没有找到邮件，请联系管理员：</p>
+        {{if truthy (pne (cfg "admin_contact1") nil)}}
+            <li>{{cfg "admin_contact1"}}</li>
+        {{end}}
+        {{if truthy (pne (cfg "admin_contact2") nil)}}
+            <li>{{cfg "admin_contact2"}}</li>
+        {{end}}
+        {{if truthy (pne (cfg "admin_contact3") nil)}}
+            <li>{{cfg "admin_contact3"}}</li>
+        {{end}}
+    {{end}}
+</ul>{{end}}

@@ -1,0 +1,7 @@
+{{define "page"}}{{template "partials/user/header_info" $}}
+<main class="content"><div class="container"><div class="card"><div class="card-main"><div class="card-inner">
+<h1 class="card-heading">{{$.Data.proxy.Name}}</h1><p>协议：{{$.Data.proxy.Kind}}<br>地址：{{$.Data.proxy.Server}}<br>端口：{{$.Data.proxy.Port}}</p>
+<p>此链接包含个人连接凭据，请勿泄露。</p><label for="node-uri">节点链接（选中复制）</label><textarea id="node-uri" class="form-control" rows="6" readonly>{{$.Data.uri}}</textarea>
+<p><a href="/client-subscription-guide.html" target="_blank" rel="noopener noreferrer">查看客户端教程 ↗</a></p>
+</div></div></div></div></main>
+{{template "partials/user/footer" $}}{{end}}

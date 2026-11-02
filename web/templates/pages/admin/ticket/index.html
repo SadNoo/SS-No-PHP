@@ -1,0 +1,53 @@
+{{define "page"}}{{template "partials/admin/main" $}}
+
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">工单</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-lg-12 col-sm-12">
+            <section class="content-inner margin-top-no">
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <p>系统中的工单</p>
+                            <p>显示表项:
+                                {{template "partials/table/checkbox" $}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    {{template "partials/table/table" $}}
+                </div>
+
+
+        </div>
+
+
+    </div>
+</main>
+
+
+{{template "partials/admin/footer" $}}
+
+
+<script nonce="{{$.Nonce}}">
+    {{template "partials/table/js_1" $}}
+
+    window.addEventListener('load', () => {
+        table = $('#table_tickets').DataTable({
+            ajax: 'ticket/ajax',
+            processing: true,
+            serverSide: true,
+            order: [[1, 'desc']]
+        })
+
+        {{template "partials/table/js_2" $}}
+    });
+</script>{{end}}

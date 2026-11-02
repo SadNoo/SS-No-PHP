@@ -1,0 +1,30 @@
+{{define "client-proxies"}}[Proxy]
+{{range .Proxies}}{{.}}
+{{end}}{{end}}
+{{define "client-groups"}}[Proxy Group]
+🍃 Proxy = select, {{join .Names ", "}}
+🫥SiriAI = select, 🍃 Proxy, {{join .Names ", "}}, DIRECT
+🍎 Only = select, DIRECT, 🍃 Proxy, {{join .Names ", "}}
+🏖 Netflix = select, 🍃 Proxy, {{join .Names ", "}}, DIRECT
+🍂 Domestic = select, DIRECT, 🍃 Proxy, {{join .Names ", "}}
+☁️ Others = select, 🍃 Proxy, {{join .Names ", "}}, DIRECT
+{{end}}
+{{define "client-local-rules"}}# Loopback and LAN always bypass the proxy, including literal IPv6 destinations.
+{{range .Bypass}}{{ipRule .}},{{.}},DIRECT,no-resolve
+{{end}}DOMAIN,localhost,DIRECT
+DOMAIN-SUFFIX,localhost,DIRECT
+DOMAIN-SUFFIX,local,DIRECT
+DOMAIN-SUFFIX,lan,DIRECT
+DOMAIN-SUFFIX,home.arpa,DIRECT
+# AliDNS bootstrap and encrypted-DNS transport remain independent of proxy nodes.
+DOMAIN,dns.alidns.com,DIRECT
+{{end}}
+{{define "client-domain-rules"}}# Explicit overrides and SiriAI must precede the Apple / CN subscriptions.
+{{range .ProxyDomains}}DOMAIN-SUFFIX,{{.}},🍃 Proxy
+{{end}}{{range .SiriRules}}{{.}}
+{{end}}{{end}}
+{{define "client-hosts"}}[Host]
+localhost = 127.0.0.1
+# Keep the TLS hostname; pin only its DNS address to avoid system-DNS bootstrap.
+dns.alidns.com = 223.5.5.5
+{{end}}

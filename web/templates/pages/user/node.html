@@ -1,0 +1,363 @@
+{{define "page"}}{{template "partials/user/main" $}}
+
+{{/* 原版从 jsDelivr 加载 canvasjs 与 jQuery 3.3.1（K14），改为本站文件；jQuery 已在头部加载。
+     原版的 hideURLbar 内联脚本（type=application/x-javascript，浏览器不会执行）已删除。 */}}
+<script src="/assets/js/canvasjs.min.js"></script>
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">节点列表</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="content-inner margin-top-no">
+            <div class="ui-card-wrap">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12 nodelist">
+
+                        <div class="ui-switch node-switch">
+                            <div class="card">
+                                <div class="card-main">
+                                    <div class="card-inner ui-switch">
+                                        <div class="switch-btn" id="switch-cards"><a href="#" data-prevent><i
+                                                        class="mdui-icon material-icons">apps</i></a></div>
+                                        <div class="switch-btn" id="switch-table"><a href="#" data-prevent><i
+                                                        class="mdui-icon material-icons">dehaze</i></a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="node-cardgroup">
+                            {{range $node := $.Data.nodes}}
+                            {{if $node.GroupStart}}
+                        <div class="nodetitle">
+                            <a class="waves-effect waves-button" data-toggle="collapse" href="#cardgroup{{$node.Class}}"
+                               aria-expanded="true" aria-controls="cardgroup{{$node.Class}}">
+                                <span>{{if eq $node.Class 0}}普通{{else}}VIP {{$node.Class}} {{end}}用户节点</span><i
+                                        class="material-icons">expand_more</i>
+                            </a>
+                        </div>
+                        <div class="card-row collapse in" id="cardgroup{{$node.Class}}">
+                            {{end}}
+                            <div class="node-card node-flex" cardindex="{{$node.Index}}">
+                                <div class="nodemain">
+                                    <div class="nodehead node-flex">
+                                        {{if peq (cfg "enable_flag") "true"}}
+                                            <div class="flag"><img src="/images/prefix/{{$node.Flag}}">
+                                            </div>{{end}}
+                                        <div class="nodename">{{$node.Name}}</div>
+                                    </div>
+                                    <div class="nodemiddle node-flex">
+                                        <div class="onlinemember node-flex"><i class="material-icons node-icon">flight_takeoff</i><span> {{$node.OnlineUser}}</span>
+                                        </div>
+                                        <div class="nodetype">{{$node.Status}}</div>
+                                    </div>
+                                    <div class="nodeinfo node-flex">
+                                        <div class="nodetraffic node-flex"><i
+                                                    class="material-icons node-icon">equalizer</i><span>{{if gt $node.TrafficMax 0}}{{$node.TrafficUsed}}/{{$node.TrafficMax}}GB{{else}}{{$node.TrafficUsed}}GB{{end}}</span>
+                                        </div>
+                                        <div class="nodecheck node-flex">
+                                            <i class="material-icons node-icon">network_check</i><span>x{{$node.TrafficRate}}</span>
+                                        </div>
+                                        <div class="nodeband node-flex"><i class="material-icons node-icon">flash_on</i><span>{{if eq $node.Bandwidth "0"}}N/A{{else}}{{$node.Bandwidth}}{{end}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="nodestatus">
+                                    <div class="{{if eq $node.Online 1}}nodeonline{{else if eq $node.Online 0}}nodeunset{{else}}nodeoffline{{end}}">
+                                        <i class="material-icons">{{if eq $node.Online 1}}cloud_queue{{else if eq $node.Online 0}}wifi_off{{else}}flash_off{{end}}</i>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="node-tip cust-model" tipindex="{{$node.Index}}">
+                                {{if $node.Locked}}
+                                    <p class="card-heading" align="center"><b> <i
+                                                    class="icon icon-lg">visibility_off</i>
+                                            您当前等级不足以使用该节点，如需升级请<a href="/user/shop">点击这里</a>升级套餐</b></p>
+                                {{else}}
+                                    {{if $node.ShowLink}}
+                                        <div class="tiptitle">
+                                            <a href="javascript:void(0);" data-call="urlChange" data-args='["{{$node.ID}}",0,{{$node.LinkRelayID}}]'>
+                                                {{$node.Name}}{{if $node.LinkRelayID}} - {{$node.LinkRelayName}}{{end}}
+                                            </a>
+                                            <div class="nodeload">
+                                                <div class="label label-brand-accent"> ↑点击节点查看配置信息</div>
+                                                <div>
+                                                    <span class="node-icon"><i class="icon icon-lg">cloud</i></span>
+                                                    <span class="node-load">负载：<code>{{$node.LoadText}}</code></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {{else if $node.V2Title}}
+                                        <div class="tiptitle">
+                                            <a href="javascript:void(0);">{{$node.Name}}</a>
+                                        </div>
+                                    {{end}}
+                                    {{range $mu := $node.MuEntries}}
+                                            <div class="tiptitle">
+                                                <a href="javascript:void(0);" data-call="urlChange" data-args='["{{$node.ID}}","{{$mu.Port}}",{{$mu.RelayID}}]'>{{$node.Name}}
+                                                    {{if $mu.RelayID}} - {{$mu.RelayName}}{{end}} -
+                                                    单端口 Shadowsocks - {{$mu.Port}} 端口
+                                                </a>
+                                            </div>
+                                    {{end}}
+                                    <div class="tipmiddle">
+                                        <div><span class="node-icon"><i
+                                                        class="icon icon-lg">chat</i> </span>{{$node.Info}}</div>
+                                    </div>
+                                    {{if $node.V2}}{{template "v2info" (dict "v" $node.V2 "rate" $node.TrafficRate "uuid" $.User.UUID)}}{{end}}
+                                {{end}}
+                            </div>
+                            {{if $node.GroupEnd}}</div>{{end}}
+                        {{end}}
+                    </div>
+
+                    <div class="card node-table">
+                        <div class="card-main">
+                            <div class="card-inner margin-bottom-no">
+                                <div class="tile-wrap">
+                                    {{range $node := $.Data.nodes}}
+                                        {{if $node.GroupStart}}
+                                            <p class="card-heading">{{if eq $node.Class 0}}普通{{else}}VIP {{$node.Class}} {{end}}
+                                                用户节点</p>
+                                        {{end}}
+                                        <div class="tile tile-collapse">
+                                            <div data-toggle="tile" data-target="#heading{{$node.ID}}">
+                                                <div class="tile-side pull-left" data-ignore="tile">
+                                                    <div class="avatar avatar-sm {{if eq $node.Online 1}}nodeonline{{else if eq $node.Online 0}}nodeunset{{else}}nodeoffline{{end}}">
+                                                        <span class="material-icons">{{if eq $node.Online 1}}cloud_queue{{else if eq $node.Online 0}}wifi_off{{else}}flash_off{{end}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="tile-inner">
+                                                    <div class="text-overflow node-textcolor">
+														<span class="enable-flag">
+															{{if peq (cfg "enable_flag") "true"}}
+                                                                <img src="/images/prefix/{{$node.Flag}}" height="22"
+                                                                     width="40"/>
+                                                            {{end}}
+                                                            {{$node.Name}}
+														</span>
+                                                        |
+                                                        <span class="node-icon">
+                                                            <i class="icon icon-lg">flight_takeoff</i></span>
+                                                        <strong><b><span
+                                                                        class="node-alive">{{$node.OnlineUser}}</span></b></strong>
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">cloud</i></span>
+                                                        <span class="node-load">负载：{{$node.LoadText}}</span>
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">import_export</i></span>
+                                                        <span class="node-mothed">{{$node.Bandwidth}}</span>
+                                                        | <span class="node-icon"><i class="icon icon-lg">equalizer</i></span>
+                                                        {{if gt $node.TrafficMax 0}}
+                                                            <span class="node-band">{{$node.TrafficUsed}}/{{$node.TrafficMax}}</span>
+                                                        {{else}}
+                                                            {{$node.TrafficUsed}}GB
+                                                        {{end}}
+                                                        | <span class="node-icon">
+                                                            <i class="icon icon-lg">network_check</i></span>
+                                                        <span class="node-tr">{{$node.TrafficRate}} 倍率</span>
+                                                        | <span class="node-icon"><i class="icon icon-lg">notifications_none</i></span>
+                                                        <span class="node-status">{{$node.Status}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="collapsible-region collapse" id="heading{{$node.ID}}">
+                                                <div class="tile-sub">
+                                                    <br>
+                                                    {{if $node.Locked}}
+                                                        <div class="card">
+                                                            <div class="card-main">
+                                                                <div class="card-inner">
+                                                                    <p class="card-heading" align="center"><b> <i
+                                                                                    class="icon icon-lg">visibility_off</i>
+                                                                            您当前等级不足以使用该节点，如需升级请<a
+                                                                                    href="/user/shop">点击这里</a>升级套餐</b>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {{else}}
+                                                        <div class="card nodetip-table">
+                                                            <div class="card-main">
+                                                                <div class="card-inner">
+                                                                    {{if $node.ShowLink}}
+                                                                        <p class="card-heading">
+                                                                            <a href="javascript:void(0);" data-call="urlChange" data-args='["{{$node.ID}}",0,{{$node.LinkRelayID}}]'>{{$node.Name}}
+                                                                                {{if $node.LinkRelayID}} - {{$node.LinkRelayName}}{{end}}</a>
+                                                                            <span class="label label-brand-accent">←点击节点查看配置信息</span>
+                                                                        </p>
+                                                                    {{else if $node.V2Title}}
+                                                                        <div class="tiptitle">
+                                                                            <a href="javascript:void(0);">{{$node.Name}}</a>
+                                                                        </div>
+                                                                    {{end}}
+                                                                    {{range $mu := $node.MuEntries}}
+                                                                            <p class="card-heading">
+                                                                                <a href="javascript:void(0);" data-call="urlChange" data-args='["{{$node.ID}}","{{$mu.Port}}",{{$mu.RelayID}}]'>{{$node.Name}}
+                                                                                    {{if $mu.RelayID}} - {{$mu.RelayName}}{{end}}
+                                                                                    - 单端口 Shadowsocks -
+                                                                                    {{$mu.Port}}
+                                                                                    端口</a><span
+                                                                                        class="label label-brand-accent">←点击节点查看配置信息</span>
+                                                                            </p>
+                                                                    {{end}}
+
+                                                                    <div>
+                                                                        <i class="icon icon-lg node-icon">chat</i> {{$node.Info}}
+                                                                    </div>
+
+                                                                    {{if $node.V2}}{{template "v2info" (dict "v" $node.V2 "rate" $node.TrafficRate "uuid" $.User.UUID)}}{{end}}
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    {{end}}
+
+                                                    {{if $node.AjaxID}}
+                                                            <div class="card">
+                                                                <div class="card-main">
+                                                                    <div class="card-inner node-ajax-info" id="info{{$node.Index}}"
+                                                                         data-heading="#heading{{$node.ID}}" data-url="/user/node/{{$node.AjaxID}}/ajax">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                    {{end}}
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    {{end}}
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{template "partials/dialog" $}}
+                <div aria-hidden="true" class="modal modal-va-middle fade" id="nodeinfo" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-full">
+                        <div class="modal-content">
+                            <iframe class="iframe-seamless" title="Modal with iFrame" id="infoifram"></iframe>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </div>
+</main>
+
+
+{{template "partials/user/footer" $}}
+<script src="/assets/js/node-charts.js"></script>
+
+
+<script nonce="{{$.Nonce}}">
+
+    function urlChange(id, is_mu, rule_id) {
+        var site = `./node/${
+                id
+                }?ismu=${
+                is_mu
+                }&relay_rule=${
+                rule_id
+                }`;
+        if (id == 'guide') {
+            var doc = document.getElementById('infoifram').contentWindow.document;
+            doc.open();
+            doc.write('<img src="../images/node.gif" style="width: 100%;height: 100%; border: none;"/>');
+            doc.close();
+        } else {
+            document.getElementById('infoifram').src = site;
+        }
+        $("#nodeinfo").modal();
+    }
+
+    // 原版每个节点输出一段内联脚本，展开时加载图表；这里统一绑定。
+    $(function () {
+        $('.node-ajax-info').each(function () {
+            var box = $(this);
+            $(box.data('heading')).on("shown.bs.tile", function () {
+                box.load(box.data('url'), function () {
+                    renderNodeCharts(box[0]);
+                });
+            });
+        });
+    });
+
+    $(function () {
+        new Clipboard('.copy-text');
+    });
+    $(".copy-text").click(function () {
+        $("#result").modal();
+        $$.getElementById('msg').innerHTML = '已复制，请进入软件添加。';
+    });
+
+    
+    ;(function () {
+        'use strict'
+        //箭头旋转
+        let rotateTrigger = document.querySelectorAll('a[href^="#cardgroup"]');
+        let arrows = document.querySelectorAll('a[href^="#cardgroup"] i')
+
+        for (let i = 0; i < rotateTrigger.length; i++) {
+            rotatrArrow(rotateTrigger[i], arrows[i]);
+        }
+
+        //UI切换
+        let elNodeCard = $$.querySelector(".node-cardgroup");
+        let elNodeTable = $$.querySelector(".node-table");
+
+        let switchToCard = new UIswitch('switch-cards', elNodeTable, elNodeCard, 'grid', 'tempnode');
+        switchToCard.listenSwitch();
+
+        let switchToTable = new UIswitch('switch-table', elNodeCard, elNodeTable, 'flex', 'tempnode');
+        switchToTable.listenSwitch();
+
+        switchToCard.setDefault();
+        switchToTable.setDefault();
+
+        //遮罩
+        let buttongroup = document.querySelectorAll('.node-card');
+        let modelgroup = document.querySelectorAll('.node-tip');
+
+        for (let i = 0; i < buttongroup.length; i++) {
+            custModal(buttongroup[i], modelgroup[i]);
+        }
+
+    })();
+    
+
+</script>{{end}}
+
+{{/* 原版模板函数 displayV2rayNode */}}
+{{define "v2info"}}
+    <p>地址：<span class="card-tag tag-blue">{{.v.Add}}</span></p>
+    <p>端口：<span class="card-tag tag-volcano">{{.v.Port}}</span></p>
+    <p>AlterId：<span class="card-tag tag-purple">{{.v.Aid}}</span></p>
+    <p>用户 UUID：<span class="card-tag tag-geekblue">{{.uuid}}</span></p>
+    <p>传输协议：<span class="card-tag tag-green">{{if eq .v.Net "tls"}}tcp{{else}}{{.v.Net}}{{end}}</span></p>
+    {{if eq .v.Net "ws"}}
+        <p>路径：<span class="card-tag tag-green">{{.v.Path}}</span></p>
+    {{end}}
+
+    {{if eq .v.Net "kcp"}}
+        <p>伪装方式：<span class="card-tag tag-green">{{.v.Type}}</span></p>
+    {{end}}
+
+    {{if .v.TLS}}
+        <p>TLS：<span class="card-tag tag-green">TLS</span></p>
+    {{end}}
+    <p>流量比例：<span class="card-tag tag-red">{{.rate}}</span></p>
+    <p>VMess链接：
+        <a class="copy-text" data-clipboard-text="{{.v.URL}}">点击复制</a>
+    </p>
+{{end}}

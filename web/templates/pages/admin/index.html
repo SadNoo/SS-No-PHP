@@ -1,0 +1,319 @@
+{{define "page"}}{{template "partials/admin/main" $}}
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">汇总</h1>
+        </div>
+    </div>
+    <div class="container">
+        <section class="content-inner margin-top-no">
+            <div class="row">
+                <div class="col-xx-12">
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <p>下面是系统运行情况简报。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-card-wrap">
+                <div class="row">
+
+                    <div class="col-xx-12 col-sm-6">
+
+
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+
+                                    <div id="check_chart" style="height: 300px; width: 100%;"></div>
+
+                                    <script src="/assets/js/canvasjs.min.js"></script>
+                                    <script nonce="{{$.Nonce}}">
+                                        var chart = new CanvasJS.Chart("check_chart",
+                                                {
+                                                    title: {
+                                                        text: "用户签到情况(总用户 {{$.Data.sts.GetTotalUser}}人)",
+                                                        fontFamily: "Impact",
+                                                        fontWeight: "normal"
+                                                    },
+
+                                                    legend: {
+                                                        verticalAlign: "bottom",
+                                                        horizontalAlign: "center"
+                                                    },
+                                                    data: [
+                                                        {
+                                                            //startAngle: 45,
+                                                            indexLabelFontSize: 20,
+                                                            indexLabelFontFamily: "Garamond",
+                                                            indexLabelFontColor: "darkgrey",
+                                                            indexLabelLineColor: "darkgrey",
+                                                            indexLabelPlacement: "outside",
+                                                            type: "doughnut",
+                                                            showInLegend: true,
+                                                            dataPoints: [
+                                                                {
+                                                                    y: {{(mul (sub 1 (div $.Data.sts.GetCheckinUser $.Data.sts.GetTotalUser)) 100)}},
+                                                                    legendText: "没有签到过的用户 {{(numberFormat (mul (sub 1 (div $.Data.sts.GetCheckinUser $.Data.sts.GetTotalUser)) 100) 2)}}% {{(sub $.Data.sts.GetTotalUser $.Data.sts.GetCheckinUser)}}人",
+                                                                    indexLabel: "没有签到过的用户 {{(numberFormat (mul (sub 1 (div $.Data.sts.GetCheckinUser $.Data.sts.GetTotalUser)) 100) 2)}}% {{(sub $.Data.sts.GetTotalUser $.Data.sts.GetCheckinUser)}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div (sub $.Data.sts.GetCheckinUser $.Data.sts.GetTodayCheckinUser) $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "曾经签到过的用户 {{(numberFormat (mul (div (sub $.Data.sts.GetCheckinUser $.Data.sts.GetTodayCheckinUser) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub $.Data.sts.GetCheckinUser $.Data.sts.GetTodayCheckinUser)}}人",
+                                                                    indexLabel: "曾经签到过的用户 {{(numberFormat (mul (div (sub $.Data.sts.GetCheckinUser $.Data.sts.GetTodayCheckinUser) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub $.Data.sts.GetCheckinUser $.Data.sts.GetTodayCheckinUser)}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetTodayCheckinUser $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "今日签到用户 {{(numberFormat (mul (div $.Data.sts.GetTodayCheckinUser $.Data.sts.GetTotalUser) 100) 2)}}% {{$.Data.sts.GetTodayCheckinUser}}人",
+                                                                    indexLabel: "今日签到用户 {{(numberFormat (mul (div $.Data.sts.GetTodayCheckinUser $.Data.sts.GetTotalUser) 100) 2)}}% {{$.Data.sts.GetTodayCheckinUser}}人"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                });
+
+                                        chart.render();
+
+                                        function chartRender(chart) {
+                                            chart.render();
+                                            chart.ctx.shadowBlur = 8;
+                                            chart.ctx.shadowOffsetX = 4;
+                                            chart.ctx.shadowColor = "black";
+
+                                            for (let i in chart.plotInfo.plotTypes) {
+                                                let plotType = chart.plotInfo.plotTypes[i];
+                                                for (let j in plotType.plotUnits) {
+                                                    let plotUnit = plotType.plotUnits[j];
+                                                    if (plotUnit.type === "doughnut") {
+                                                        // For Column Chart
+                                                        chart.renderDoughnut(plotUnit);
+                                                    } else if (plotUnit.type === "bar") {
+                                                        // For Bar Chart
+                                                        chart.renderBar(plotUnit);
+                                                    }
+                                                }
+                                            }
+                                            chart.ctx.shadowBlur = 0;
+                                            chart.ctx.shadowOffsetX = 0;
+                                            chart.ctx.shadowColor = "transparent";
+                                        }
+                                    </script>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+
+                                    <div id="alive_chart" style="height: 300px; width: 100%;"></div>
+
+                                    <script src="/assets/js/canvasjs.min.js"></script>
+                                    <script nonce="{{$.Nonce}}">
+                                        var chart = new CanvasJS.Chart("alive_chart",
+                                                {
+                                                    title: {
+                                                        text: "用户在线情况(总用户 {{$.Data.sts.GetTotalUser}}人)",
+                                                        fontFamily: "Impact",
+                                                        fontWeight: "normal"
+                                                    },
+
+                                                    legend: {
+                                                        verticalAlign: "bottom",
+                                                        horizontalAlign: "center"
+                                                    },
+                                                    data: [
+                                                        {
+                                                            //startAngle: 45,
+                                                            indexLabelFontSize: 20,
+                                                            indexLabelFontFamily: "Garamond",
+                                                            indexLabelFontColor: "darkgrey",
+                                                            indexLabelLineColor: "darkgrey",
+                                                            indexLabelPlacement: "outside",
+                                                            type: "doughnut",
+                                                            showInLegend: true,
+                                                            dataPoints: [
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetUnusedUser $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "从未在线的用户 {{(numberFormat (mul (div $.Data.sts.GetUnusedUser $.Data.sts.GetTotalUser) 100) 2)}}% {{$.Data.sts.GetUnusedUser}}人",
+                                                                    indexLabel: "从未在线的用户 {{(numberFormat (mul (div $.Data.sts.GetUnusedUser $.Data.sts.GetTotalUser) 100) 2)}}% {{$.Data.sts.GetUnusedUser}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div (sub (sub $.Data.sts.GetTotalUser ($.Data.sts.GetOnlineUser 86400)) $.Data.sts.GetUnusedUser) $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "一天以前在线的用户 {{(numberFormat (mul (div (sub (sub $.Data.sts.GetTotalUser ($.Data.sts.GetOnlineUser 86400)) $.Data.sts.GetUnusedUser) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub (sub $.Data.sts.GetTotalUser ($.Data.sts.GetOnlineUser 86400)) $.Data.sts.GetUnusedUser)}}人",
+                                                                    indexLabel: "一天以前在线的用户 {{(numberFormat (mul (div (sub (sub $.Data.sts.GetTotalUser ($.Data.sts.GetOnlineUser 86400)) $.Data.sts.GetUnusedUser) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub (sub $.Data.sts.GetTotalUser ($.Data.sts.GetOnlineUser 86400)) $.Data.sts.GetUnusedUser)}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div (sub ($.Data.sts.GetOnlineUser 86400) ($.Data.sts.GetOnlineUser 3600)) $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "一天内在线的用户 {{(numberFormat (mul (div (sub ($.Data.sts.GetOnlineUser 86400) ($.Data.sts.GetOnlineUser 3600)) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub ($.Data.sts.GetOnlineUser 86400) ($.Data.sts.GetOnlineUser 3600))}}人",
+                                                                    indexLabel: "一天内在线的用户 {{(numberFormat (mul (div (sub ($.Data.sts.GetOnlineUser 86400) ($.Data.sts.GetOnlineUser 3600)) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub ($.Data.sts.GetOnlineUser 86400) ($.Data.sts.GetOnlineUser 3600))}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div (sub ($.Data.sts.GetOnlineUser 3600) ($.Data.sts.GetOnlineUser 60)) $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "一小时内在线的用户 {{(numberFormat (mul (div (sub ($.Data.sts.GetOnlineUser 3600) ($.Data.sts.GetOnlineUser 60)) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub ($.Data.sts.GetOnlineUser 3600) ($.Data.sts.GetOnlineUser 60))}}人",
+                                                                    indexLabel: "一小时内在线的用户 {{(numberFormat (mul (div (sub ($.Data.sts.GetOnlineUser 3600) ($.Data.sts.GetOnlineUser 60)) $.Data.sts.GetTotalUser) 100) 2)}}% {{(sub ($.Data.sts.GetOnlineUser 3600) ($.Data.sts.GetOnlineUser 60))}}人"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div ($.Data.sts.GetOnlineUser 60) $.Data.sts.GetTotalUser) 100)}},
+                                                                    legendText: "一分钟内在线的用户 {{(numberFormat (mul (div ($.Data.sts.GetOnlineUser 60) $.Data.sts.GetTotalUser) 100) 2)}}% {{($.Data.sts.GetOnlineUser 60)}}人",
+                                                                    indexLabel: "一分钟内在线的用户 {{(numberFormat (mul (div ($.Data.sts.GetOnlineUser 60) $.Data.sts.GetTotalUser) 100) 2)}}% {{($.Data.sts.GetOnlineUser 60)}}人"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                });
+
+                                        chart.render();
+                                    </script>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="col-xx-12 col-sm-6">
+
+
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+
+                                    <div id="node_chart" style="height: 300px; width: 100%;"></div>
+
+                                    <script src="/assets/js/canvasjs.min.js"></script>
+                                    <script nonce="{{$.Nonce}}">
+                                        var chart = new CanvasJS.Chart("node_chart",
+                                                {
+                                                    title: {
+                                                        text: "节点在线情况(节点数 {{$.Data.sts.GetTotalNodes}}个)",
+                                                        fontFamily: "Impact",
+                                                        fontWeight: "normal"
+                                                    },
+
+                                                    legend: {
+                                                        verticalAlign: "bottom",
+                                                        horizontalAlign: "center"
+                                                    },
+                                                    data: [
+                                                        {
+                                                            //startAngle: 45,
+                                                            indexLabelFontSize: 20,
+                                                            indexLabelFontFamily: "Garamond",
+                                                            indexLabelFontColor: "darkgrey",
+                                                            indexLabelLineColor: "darkgrey",
+                                                            indexLabelPlacement: "outside",
+                                                            type: "doughnut",
+                                                            showInLegend: true,
+                                                            dataPoints: [
+                                                                {{if truthy (pne $.Data.sts.GetTotalNodes 0)}}
+                                                                {
+                                                                    y: {{(mul (sub 1 (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes)) 100)}},
+                                                                    legendText: "离线节点 {{(numberFormat (mul (sub 1 (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes)) 100) 2)}}% {{(sub $.Data.sts.GetTotalNodes $.Data.sts.GetAliveNodes)}}个",
+                                                                    indexLabel: "离线节点 {{(numberFormat (mul (sub 1 (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes)) 100) 2)}}% {{(sub $.Data.sts.GetTotalNodes $.Data.sts.GetAliveNodes)}}个"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes) 100)}},
+                                                                    legendText: "在线节点 {{(numberFormat (mul (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes) 100) 2)}}% {{$.Data.sts.GetAliveNodes}}个",
+                                                                    indexLabel: "在线节点 {{(numberFormat (mul (div $.Data.sts.GetAliveNodes $.Data.sts.GetTotalNodes) 100) 2)}}% {{$.Data.sts.GetAliveNodes}}个"
+                                                                }
+                                                                {{end}}
+                                                            ]
+                                                        }
+                                                    ]
+                                                });
+
+                                        chart.render();
+                                    </script>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="card">
+                            <div class="card-main">
+                                <div class="card-inner">
+
+                                    <div id="traffic_chart" style="height: 300px; width: 100%;"></div>
+
+                                    <script src="/assets/js/canvasjs.min.js"></script>
+                                    <script nonce="{{$.Nonce}}">
+                                        var chart = new CanvasJS.Chart("traffic_chart",
+                                                {
+                                                    title: {
+                                                        text: "流量使用情况(总分配流量 {{$.Data.sts.GetTotalTraffic}})",
+                                                        fontFamily: "Impact",
+                                                        fontWeight: "normal"
+                                                    },
+
+                                                    legend: {
+                                                        verticalAlign: "bottom",
+                                                        horizontalAlign: "center"
+                                                    },
+                                                    data: [
+                                                        {
+                                                            //startAngle: 45,
+                                                            indexLabelFontSize: 20,
+                                                            indexLabelFontFamily: "Garamond",
+                                                            indexLabelFontColor: "darkgrey",
+                                                            indexLabelLineColor: "darkgrey",
+                                                            indexLabelPlacement: "outside",
+                                                            type: "doughnut",
+                                                            showInLegend: true,
+                                                            dataPoints: [
+                                                                {{if truthy (pne $.Data.sts.GetRawTotalTraffic 0)}}
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetRawUnusedTrafficUsage $.Data.sts.GetRawTotalTraffic) 100)}},
+                                                                    label: "总剩余可用",
+                                                                    legendText: "总剩余可用 {{(numberFormat (mul (div $.Data.sts.GetRawUnusedTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetUnusedTrafficUsage}}",
+                                                                    indexLabel: "总剩余可用 {{(numberFormat (mul (div $.Data.sts.GetRawUnusedTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetUnusedTrafficUsage}}"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetRawLastTrafficUsage $.Data.sts.GetRawTotalTraffic) 100)}},
+                                                                    label: "总过去已用",
+                                                                    legendText: "总过去已用 {{(numberFormat (mul (div $.Data.sts.GetRawLastTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetLastTrafficUsage}}",
+                                                                    indexLabel: "总过去已用 {{(numberFormat (mul (div $.Data.sts.GetRawLastTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetLastTrafficUsage}}"
+                                                                },
+                                                                {
+                                                                    y: {{(mul (div $.Data.sts.GetRawTodayTrafficUsage $.Data.sts.GetRawTotalTraffic) 100)}},
+                                                                    label: "总今日已用",
+                                                                    legendText: "总今日已用 {{(numberFormat (mul (div $.Data.sts.GetRawTodayTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetTodayTrafficUsage}}",
+                                                                    indexLabel: "总今日已用 {{(numberFormat (mul (div $.Data.sts.GetRawTodayTrafficUsage $.Data.sts.GetRawTotalTraffic) 100) 2)}}% {{$.Data.sts.GetTodayTrafficUsage}}"
+                                                                }
+                                                                {{end}}
+                                                            ]
+                                                        }
+                                                    ]
+                                                });
+
+                                        chart.render();
+                                    </script>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+
+{{template "partials/admin/footer" $}}{{end}}

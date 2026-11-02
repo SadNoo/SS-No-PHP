@@ -1,0 +1,13 @@
+# niuniupanel: {{.Client}} legacy compatibility profile
+# Older parsers use plain fixed DNS and embedded rules; no modern DoH keys.
+[General]
+ipv6 = false
+skip-proxy = 127.0.0.0/8, ::1/128, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10, fc00::/7, fe80::/10, localhost, *.local, *.lan, *.home.arpa
+dns-server = 223.5.5.5
+
+{{template "client-proxies" .}}
+{{template "client-groups" .}}
+[Rule]
+{{.Rules}}
+[Host]
+localhost = 127.0.0.1

@@ -1,0 +1,142 @@
+{{define "page"}}{{template "partials/admin/main" $}}
+
+
+<main class="content">
+    <div class="content-header ui-content-header">
+        <div class="container">
+            <h1 class="content-heading">中转规则管理</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-lg-12 col-md-12">
+            <section class="content-inner margin-top-no">
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <p>系统中所有的中转规则。</p>
+                            <p>显示表项:
+                                {{template "partials/table/checkbox" $}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="search"> 输入用户 ID 进行搜索链路搜索 </label>
+                                <input class="form-control maxwidth-edit" id="search" type="text">
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-action-btn pull-left">
+                                <a class="btn btn-flat waves-attach waves-light" id="search_button"><span class="icon">search</span>&nbsp;搜索</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    {{template "partials/table/table" $}}
+                </div>
+
+                <div class="fbtn-container">
+                    <div class="fbtn-inner">
+                        <a class="fbtn fbtn-lg fbtn-brand-accent waves-attach waves-circle waves-light"
+                           href="/admin/relay/create">+</a>
+
+                    </div>
+                </div>
+
+                <div aria-hidden="true" class="modal modal-va-middle fade" id="delete_modal" role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog modal-xs">
+                        <div class="modal-content">
+                            <div class="modal-heading">
+                                <a class="modal-close" data-dismiss="modal">×</a>
+                                <h2 class="modal-title">确认要删除？</h2>
+                            </div>
+                            <div class="modal-inner">
+                                <p>请您确认。</p>
+                            </div>
+                            <div class="modal-footer">
+                                <p class="text-right">
+                                    <button class="btn btn-flat btn-brand-accent waves-attach waves-effect"
+                                            data-dismiss="modal" type="button">取消
+                                    </button>
+                                    <button class="btn btn-flat btn-brand-accent waves-attach" data-dismiss="modal"
+                                            id="delete_input" type="button">确定
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{template "partials/dialog" $}}
+
+
+        </div>
+
+
+    </div>
+</main>
+
+
+{{template "partials/admin/footer" $}}
+
+<script nonce="{{$.Nonce}}">
+
+    function delete_modal_show(id) {
+        deleteid = id;
+        $("#delete_modal").modal();
+    }
+
+    {{template "partials/table/js_1" $}}
+
+
+    window.addEventListener('load', () => {
+
+        {{template "partials/table/js_2" $}}
+
+        function delete_id() {
+            $.ajax({
+                type: "DELETE",
+                url: "/admin/relay",
+                dataType: "json",
+                data: {
+                    id: deleteid
+                },
+                success: data => {
+                    if (data.ret) {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                        {{template "partials/table/js_delete" $}}
+                    } else {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                    }
+                },
+                error: jqXHR => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `${data.msg} 发生错误了。`;
+                }
+            });
+        }
+
+        $$.getElementById('delete_input').addEventListener('click', delete_id);
+
+        let search = () => {
+            window.location = `/admin/relay/path_search/${$$.getElementById('search').value}`;
+        }
+
+        $$.getElementById('search_button').addEventListener('click', () => {
+            if ($$.getElementById('search').value !== "") {
+                search();
+            }
+        })
+    })
+
+</script>{{end}}

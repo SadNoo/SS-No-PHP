@@ -1,0 +1,24 @@
+# 构建产物
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage.*
+
+# 本地配置与密钥（只提交 config.example.toml）
+/config.toml
+/config.local.toml
+*.pem
+*.key
+.env
+
+# 运行时数据
+/storage/
+/tmp/
+
+# 编辑器
+.idea/
+.vscode/
+.DS_Store
+/deploy/dev/certs/

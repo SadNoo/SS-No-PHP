@@ -1,0 +1,18 @@
+# 面板配置文件（Docker 部署）：install.sh / upgrade.sh 首次复制为 config/config.toml，之后不会覆盖。
+# 大部分设置写在 .env.panel（环境变量）中；这里用于无法写成环境变量的设置，例如首页「群组」入口。
+# 键名与仓库根目录的 config.example.toml 相同。同一项在 .env.panel 中也有时，以 .env.panel 为准。
+# 修改后执行 docker compose up -d 生效（只改本文件时用 docker compose restart panel）。
+
+# 用户中心首页「群组」入口，可写多组，按顺序显示；不写则不显示该区块。
+# min_class：用户等级不低于此值才显示链接（0 为所有人可见），否则只显示标题和“购买套餐后可见”。
+# url 只能是 https / http / tg / mailto 链接；WhatsApp、LINE、Discord 请用 https 链接（如 https://wa.me/号码）。
+# [[contact.group_links]]
+# title = "Telegram(VIP可见)"
+# text = "点击加入TG群"
+# url = "https://t.me/example_group"
+# min_class = 1
+# [[contact.group_links]]
+# title = "管理员TG(VIP可见)"
+# text = "点击发起TG对话"
+# url = "https://t.me/example_admin"
+# min_class = 1

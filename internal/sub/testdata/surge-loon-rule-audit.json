@@ -1,0 +1,194 @@
+{
+  "checked_at_utc": "2026-10-21T15:59:31.141204+00:00",
+  "source": "https://github.com/blackmatrix7/ios_rule_script",
+  "rules": [
+    {
+      "client": "Surge",
+      "category": "Apple",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple_All_No_Resolve.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "2272ae3de7ffbcc2d2fae6f4fecef92a41141c27fe5583300d1f7662fa0b9baf",
+      "bytes": 51402,
+      "rule_count": 1616,
+      "rule_types": {
+        "DOMAIN": 9,
+        "DOMAIN-KEYWORD": 7,
+        "DOMAIN-SUFFIX": 1551,
+        "IP-CIDR": 10,
+        "IP-CIDR6": 3,
+        "PROCESS-NAME": 13,
+        "USER-AGENT": 23
+      }
+    },
+    {
+      "client": "Surge",
+      "category": "Netflix",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Netflix/Netflix.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "aa03f015949e8f6f981d90a7d8b1acf7e88472ee48601632bd964b0bb740f8aa",
+      "bytes": 40424,
+      "rule_count": 1158,
+      "rule_types": {
+        "DOMAIN": 3,
+        "DOMAIN-KEYWORD": 4,
+        "DOMAIN-SUFFIX": 30,
+        "IP-CIDR": 1115,
+        "IP-CIDR6": 4,
+        "PROCESS-NAME": 1,
+        "USER-AGENT": 1
+      }
+    },
+    {
+      "client": "Surge",
+      "category": "Global",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All_No_Resolve.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "8efe4758d86cf943beeefc0506212e0c12ee6c699b4530bf0ffc7b1bb084a8dc",
+      "bytes": 1012944,
+      "rule_count": 35252,
+      "rule_types": {
+        "DOMAIN": 127,
+        "DOMAIN-KEYWORD": 36,
+        "DOMAIN-SUFFIX": 34923,
+        "IP-CIDR": 115,
+        "IP-CIDR6": 4,
+        "PROCESS-NAME": 1,
+        "USER-AGENT": 46
+      }
+    },
+    {
+      "client": "Surge",
+      "category": "ChinaMax",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_All_No_Resolve.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "6f4dd26e417ada5cccf466d02fdf3c137db240ff01a7dfdb80490a949812815c",
+      "bytes": 3408523,
+      "rule_count": 123394,
+      "rule_types": {
+        "DOMAIN": 270,
+        "DOMAIN-KEYWORD": 13,
+        "DOMAIN-SUFFIX": 110476,
+        "IP-ASN": 1,
+        "IP-CIDR": 8246,
+        "IP-CIDR6": 4311,
+        "PROCESS-NAME": 12,
+        "USER-AGENT": 65
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "Apple",
+      "format": "domain-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple_Domain.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "af91ec60a25767a8298fb6040b20e3d5671a21193421bdc280c027552109c3f0",
+      "bytes": 29608,
+      "rule_count": 1560,
+      "rule_types": {
+        "exact": 9,
+        "suffix": 1551
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "Apple",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "0fcc28ce65c670ae17123b3cabac4dc7ee102ba0f8433a01d1f327d434e396ab",
+      "bytes": 1468,
+      "rule_count": 43,
+      "rule_types": {
+        "DOMAIN-KEYWORD": 7,
+        "IP-CIDR": 10,
+        "IP-CIDR6": 3,
+        "USER-AGENT": 23
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "Netflix",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Netflix/Netflix.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "ecf67cdae0468902b9b72f028d22b3bbe2c5e12607c855d2c108c6f7d497113a",
+      "bytes": 40369,
+      "rule_count": 1157,
+      "rule_types": {
+        "DOMAIN": 3,
+        "DOMAIN-KEYWORD": 4,
+        "DOMAIN-SUFFIX": 30,
+        "IP-CIDR": 1115,
+        "IP-CIDR6": 4,
+        "USER-AGENT": 1
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "Global",
+      "format": "domain-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Global/Global_Domain.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "68c65a20170bfde9f801d81df9c03c483f333f7ffd729bd974cc8a4a98b194f6",
+      "bytes": 552033,
+      "rule_count": 35050,
+      "rule_types": {
+        "exact": 127,
+        "suffix": 34923
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "Global",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Global/Global.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "4f6f6867bdb5045f43c2752cfdc5fc6d0f26d716a54a140853986ef15ca063ef",
+      "bytes": 6218,
+      "rule_count": 201,
+      "rule_types": {
+        "DOMAIN-KEYWORD": 36,
+        "IP-CIDR": 115,
+        "IP-CIDR6": 4,
+        "USER-AGENT": 46
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "ChinaMax",
+      "format": "domain-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/ChinaMax/ChinaMax_Domain.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "703c6ac23e13ed2dabecc8c4e3d080c7c6c1e58e3bd77353e801d05337d016eb",
+      "bytes": 1514014,
+      "rule_count": 110695,
+      "rule_types": {
+        "exact": 270,
+        "suffix": 110425
+      }
+    },
+    {
+      "client": "Loon",
+      "category": "ChinaMax",
+      "format": "rule-set",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/ChinaMax/ChinaMax.list",
+      "audited_commit": "f9e403a75bbc4bee939c6d8dd766cf78f1b512f3",
+      "sha256": "35afa8bc592e6de11f091169a97abea87b3032e4cd99764e08991ff77d4d1d43",
+      "bytes": 456951,
+      "rule_count": 12687,
+      "rule_types": {
+        "DOMAIN-KEYWORD": 13,
+        "DOMAIN-SUFFIX": 51,
+        "IP-ASN": 1,
+        "IP-CIDR": 8246,
+        "IP-CIDR6": 4311,
+        "USER-AGENT": 65
+      }
+    }
+  ],
+  "note": "Read-only format and coverage audit; future master contents can change. No upstream rule payloads are bundled."
+}

@@ -1,0 +1,26 @@
+# 本地开发用：MySQL 8.4（强制 TLS）+ Mailpit（接收开发邮件）。
+# 使用前先运行 deploy/dev/gen-certs.sh 生成测试证书。
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: devroot
+      MYSQL_DATABASE: niuniupanel
+      MYSQL_USER: panel
+      MYSQL_PASSWORD: panelpass
+    command:
+      - --ssl-ca=/certs/ca.pem
+      - --ssl-cert=/certs/server-cert.pem
+      - --ssl-key=/certs/server-key.pem
+      - --require-secure-transport=ON
+    ports: ["127.0.0.1:3306:3306"]
+    volumes:
+      - ./certs:/certs:ro
+      - mysql-data:/var/lib/mysql
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP
+      - "127.0.0.1:8025:8025"   # 网页查看邮件
+volumes:
+  mysql-data:

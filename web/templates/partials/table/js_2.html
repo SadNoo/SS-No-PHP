@@ -1,0 +1,42 @@
+{{define "partials/table/js_2"}}
+{{- /* 原版 table/js_2.tpl：列定义改为由后端输出 JSON（html/template 在脚本中会正确转义）。 */ -}}
+var tableKeys = {{$.Data.table_config.Keys}};
+var noSortKeys = {{$.Data.table_config.NoSortKeys}};
+table_1 = $('#table_1').DataTable({
+    ajax: {
+        url: {{$.Data.table_config.AjaxURL}},
+        type: "POST"
+    },
+    processing: true,
+    serverSide: true,
+    order: [[0, 'desc']],
+    stateSave: true,
+    // 浏览器保存的排序中去掉不能排序的列（例如更新前按这些列排序过），没有剩下的排序时按默认顺序。
+    stateLoadParams: function (settings, data) {
+        data.order = (data.order || []).filter(function (o) { return noSortKeys.indexOf(tableKeys[o[0]]) < 0; });
+        if (data.order.length === 0) { data.order = [[0, 'desc']]; }
+    },
+    columnDefs: [
+        {
+            targets: ['_all'],
+            className: 'mdl-data-table__cell--non-numeric'
+        }
+    ],
+    columns: tableKeys.map(function (k) { return {"data": k, "orderable": noSortKeys.indexOf(k) < 0}; }),
+    {{template "partials/table/lang_chinese" $}}
+});
+
+var has_init = JSON.parse(localStorage.getItem(window.location.href + '-hasinit'));
+if (has_init != true) {
+    localStorage.setItem(window.location.href + '-hasinit', true);
+} else {
+    tableKeys.forEach(function (k) {
+        var checked = JSON.parse(localStorage.getItem(window.location.href + '-haschecked-checkbox_' + k));
+        document.getElementById('checkbox_' + k).checked = checked == true;
+    });
+}
+
+tableKeys.forEach(function (k) {
+    modify_table_visible('checkbox_' + k, k);
+});
+{{end}}

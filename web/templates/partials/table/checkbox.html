@@ -1,0 +1,11 @@
+{{define "partials/table/checkbox"}}{{/* 原版 table/checkbox.tpl：选择显示的列。onClick 改为 data-call（CSP）。 */}}{{range $c := $.Data.table_config.Columns}}
+    <div class="checkbox checkbox-adv checkbox-inline">
+        <label for="checkbox_{{$c.Key}}">
+            <input data-call="modify_table_visible" data-args='["checkbox_{{$c.Key}}","{{$c.Key}}"]'
+                   {{if $c.Default}}checked=""{{end}}
+                   class="access-hide" id="checkbox_{{$c.Key}}" name="checkbox_{{$c.Key}}" type="checkbox">{{$c.Title}}
+            <span class="checkbox-circle"></span><span class="checkbox-circle-check"></span><span
+                    class="checkbox-circle-icon icon">done</span>
+        </label>
+    </div>
+{{end}}{{end}}

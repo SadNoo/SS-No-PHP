@@ -1,0 +1,39 @@
+{{define "layout/error"}}<!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+    <title>{{template "title" .}} - {{.Site.Cfg.App.Name}}</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="stylesheet" href="/assets/css/main.css"/>
+    <noscript>
+        <link rel="stylesheet" href="/assets/css/noscript.css"/>
+    </noscript>
+</head>
+<body>
+<div id="wrapper">
+    <header id="header">
+        <div class="logo">
+            <span class="icon fa-rocket"></span>
+        </div>
+        <div class="content">
+            <div class="inner">
+                {{template "content" .}}
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">返回首页</a></li>
+            </ul>
+        </nav>
+    </header>
+    <footer id="footer"><p class="copyright">&copy;{{year}} {{.Site.Cfg.App.Name}}</p></footer>
+</div>
+<div id="bg"></div>
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/js/skel.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>{{end}}

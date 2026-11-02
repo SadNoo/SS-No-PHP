@@ -1,0 +1,38 @@
+# /etc/systemd/system/niuniupanel.service
+# 安装步骤见 docs/deploy.md
+[Unit]
+Description=niuniupanel
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=niuniupanel
+Group=niuniupanel
+WorkingDirectory=/var/lib/niuniupanel
+# 密码、密钥放在只有 root 可读的环境变量文件中（NIUNIU_APP_KEY、NIUNIU_DATABASE_PASSWORD 等）
+EnvironmentFile=/etc/niuniupanel/env
+ExecStart=/usr/local/bin/panel -config /etc/niuniupanel/config.toml serve
+Restart=on-failure
+RestartSec=5s
+# 收到 SIGTERM 后优雅关闭（最多等待 15 秒处理中的请求）
+TimeoutStopSec=30s
+
+# 安全加固：程序只需要读配置、写工作目录、访问网络
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ReadWritePaths=/var/lib/niuniupanel
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

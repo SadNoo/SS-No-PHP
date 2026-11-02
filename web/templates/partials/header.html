@@ -1,0 +1,33 @@
+{{define "partials/header"}}<!DOCTYPE html>
+
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
+    <meta name="theme-color" content="#4285f4">
+    <title>{{cfg "appName"}}</title>
+    <!-- css -->
+    <link href="/theme/material/css/base.min.css" rel="stylesheet">
+    <link href="/theme/material/css/project.min.css" rel="stylesheet">
+    <link href="/theme/material/css/auth.css" rel="stylesheet">
+    <link href="/vendor/material-icons/material-icons.css" rel="stylesheet">
+    <style>
+        .divcss5 {
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+    <!-- favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <!-- js -->
+    <script src="/assets/js/fuck.js"></script>
+    <!-- ... -->
+</head>
+
+<body class="page-brand">
+
+
+
+{{if peq (cfg "enable_mylivechat") "true"}}{{template "partials/mylivechat" $}}{{end}}{{end}}

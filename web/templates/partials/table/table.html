@@ -1,0 +1,18 @@
+{{define "partials/table/table"}}<table id="table_1" class="mdl-data-table" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        {{range $c := $.Data.table_config.Columns}}
+            <th class="{{$c.Key}}">{{$c.Title}}</th>
+        {{end}}
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        {{range $c := $.Data.table_config.Columns}}
+            <th class="{{$c.Key}}">{{$c.Title}}</th>
+        {{end}}
+    </tr>
+    </tfoot>
+    <tbody>
+    </tbody>
+</table>{{end}}
