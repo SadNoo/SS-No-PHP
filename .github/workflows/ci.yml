@@ -27,7 +27,7 @@ jobs:
       NIUNIU_TEST_MYSQL_DSN: root:root@tcp(127.0.0.1:3306)/
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
       - name: 依赖完整性
